@@ -1,0 +1,151 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Requester Details {% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Profile Section -->
+    <div class="text-center mb-4">
+        {% if user['profile_image'] %}
+        <img src="{{ url_for('static', filename='images/profile_images/' + user['profile_image']) }}" alt="Profile Image"
+            class="rounded-circle mb-3" style="max-width: 150px" />
+        {% else %}
+        <img src="{{ url_for('static', filename='images/profile_images/default.jpg') }}" alt="Profile Image"
+            class="rounded-circle mb-3" style="max-width: 150px" />
+        {% endif %}
+        <h3 class="fw-bold text-center mt-3">{{ user['username'] }}</h3>
+        <p>{{ user['email'] }}</p>
+    </div>
+
+    <!-- Profile Information -->
+    <section class="mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>First Name:</strong> {{ user['first_name'] }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Last Name:</strong> {{ user['last_name'] }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Location:</strong> {{ user['location'] }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Role:</strong> {{ user['role'] }}</p>
+            </div>
+            <div class="col-md-12">
+                <p><strong>Description:</strong> {{ user['description'] }}</p>
+            </div>
+            <div class=" text-center">
+                <p><strong>Status:</strong> {{ user['status'] }}</p>
+                <form action="{{ url_for('changeUserStatus') }}" method="post">
+                    <input type="hidden" name="source" value="fromHelperCenter">
+                    <input type="hidden" name="requesterId" value="{{requesterId}}">
+                    <input type="hidden" name="userId" value="{{ user['user_id'] }}">
+                    {% if user['status'] == 'active' %}
+                    <input type="hidden" name="status" value="inactive">
+                    <button type="submit" class="btn btn-danger mt-3">Deactivate User</button>
+                    {% elif user['status'] == 'inactive' %}
+                    <input type="hidden" name="status" value="active">
+                    <button type="submit" class="btn btn-success mt-3">Activate User</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Voting Records -->
+    {% if votes %}
+    <section class="mb-4">
+        <h4 class="text-center mb-4">Voting Records</h4>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Vote ID</th>
+                    <th>Candidate ID</th>
+                    <th>IP Address</th>
+                    <th>Voted At</th>
+                    <th>Status</th>
+                    <th>Competition</th>
+                    <th>Event</th>
+                    <th>Competitor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vote in votes %}
+                <tr>
+                    <td>{{vote['vote_id']}}</td>
+                    <td>{{vote['candidate_id']}}</td>
+                    <td>{{vote['ip_address']}}</td>
+                    <td>{{vote['create_at'].strftime('%d-%m-%Y')}}</td>
+                    <td>{{vote['status']}}</td>
+                    <td>{{vote['theme']}}</td>
+                    <td>{{vote['title']}}</td>
+                    <td>{{vote['name']}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endif %}
+
+    <!-- Donation Records -->
+    {% if donations %}
+    <section class="mb-4">
+        <h4 class="text-center mb-4">Donation Records</h4>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Record ID</th>
+                    <th>Amount</th>
+                    <th>Anonymous</th>
+                    <th>Donated At</th>
+                    <th>Competition</th>
+                    <th>Charity Name</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for donation in donations %}
+                <tr>
+                    <td>{{donation['record_id']}}</td>
+                    <td>{{donation['amount']}}</td>
+                    <td>{{donation['anonymous']}}</td>
+                    <td>{{donation['create_at'].strftime('%d-%m-%Y')}}</td>
+                    <td>{{donation['theme']}}</td>
+                    <td>{{donation['charity_name']}}</td>
+                    <td>{{donation['payment_method']}}</td>
+                    <td>{{donation['payment_status']}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endif %}
+
+    <!-- Administered Competitions -->
+    {% if competitions %}
+    <section class="mb-4">
+        <h4 class="text-center mb-4">Competitions Administered</h4>
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Competition ID</th>
+                    <th>Theme</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in competitions %}
+                <tr>
+                    <td>{{item['competition_id']}}</td>
+                    <td>{{item['theme']}}</td>
+                    <td>{{item['status']}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

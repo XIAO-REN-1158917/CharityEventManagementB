@@ -1,0 +1,300 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Approved Competition Work Page {% endblock %}
+
+{% block content %}
+{% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {{ msg }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+{% endif %}
+<div class="container text-center mt-4">
+    <h2 class="text-center mb-4">Approved Competition Work Page</h2>
+    <!-- Cards for Competition Functionalities -->
+    <div class="row justify-content-center mb-5">
+
+        <!-- Competition Announcement Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-megaphone" style="font-size: 5rem;"></i>
+                    <h5 class="card-title mt-3">Competition Announcement</h5>
+                    <p class="card-text">Manage your competition announcements. Post updates and news for participants.
+                    </p>
+                    <a href="{{ url_for('competitionAnnouncement') }}" class="btn btn-primary">Manage Announcements</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Apply for Deletion Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-trash" style="font-size: 5rem;"></i>
+                    <h5 class="card-title mt-3">Apply for Deletion</h5>
+                    <p class="card-text">Apply for deletion allows users to request removal of a competition from the
+                        platform.
+                    </p>
+                    <a href="{{ url_for('applyDeleteCompetition') }}" class="btn btn-danger">Apply for Deletion</a>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Manage Message Board Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-x-square" style="font-size: 5rem;"></i>
+                    <h5 class="card-title mt-3">Manage Message Board</h5>
+                    <p class="card-text">
+                        {% if competitionStatus['status'] == 'open' %}
+                        Close your competition's message board to stop receiving new messages.
+                        {% else %}
+                        Open your competition's message board to allow participants to post messages.
+                        {% endif %}
+                    </p>
+                    <form
+                        action="{{ url_for('closeMessageBoard' if competitionStatus['status'] == 'open' else 'openMessageBoard') }}"
+                        method="post">
+                        <input type="hidden" name="competitionId"
+                            value="{{ session.get('competition', {})['competitionId'] }}">
+                        <button type="submit" class="btn btn-secondary">
+                            {% if competitionStatus['status'] == 'open' %}
+                            Close Message Board
+                            {% else %}
+                            Open Message Board
+                            {% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create New Event Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-square-dotted" style="font-size: 5rem;"></i>
+                    <h5 class="card-title mt-3">Create New Event</h5>
+                    <p class="card-text">Plan and organize a new event for your competition. Add start and end dates for
+                        voting or participation.</p>
+                    <a href="{{ url_for('createEvent') }}" class="btn btn-success">Create Event</a>
+                </div>
+            </div>
+        </div>
+        <!-- View Donation Detail / Apply for Donation Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-coin" style="font-size: 5rem;"></i>
+                    <h5 class="card-title mt-3">
+                        {% if hasDonation %}
+                        View Donation Detail
+                        {% else %}
+                        Apply for Donation
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">
+                        {% if hasDonation %}
+                        Review and manage the donations received for your competition.
+                        {% else %}
+                        Apply to start receiving donations for your competition.
+                        {% endif %}
+                    </p>
+                    {% if hasDonation %}
+                    <a href="{{ url_for('donationDetailForCompetitionAdmin') }}" class="btn btn-warning">View
+                        Donations</a>
+                    {% else %}
+                    <a href="{{ url_for('applyForDonation') }}" class="btn btn-warning">Apply for Donation</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Staff Management Section -->
+    <section class="mb-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4>Staff Management</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in staffList %}
+                        <tr>
+                            <td>{{ item['first_name'] }} {{ item['last_name'] }}</td>
+                            <td>{{ item['username'] }}</td>
+                            <td>{{ item['email'] }}</td>
+                            <td>
+                                {% if item['role'] == 'cadmin' %}
+                                Competition Admin
+                                {% elif item['role'] == 'cscrutineer' %}
+                                Scrutineer
+                                {% elif item['role'] == 'cmoderator' %}
+                                Moderator
+                                {% else %}
+                                {{ item['role'] }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form action="{{url_for('relieveStaff')}}" method="post"
+                                    onsubmit="return confirm('Are you sure you want to remove this staff member?');">
+                                    <input type="hidden" name="userId" value="{{item['user_id']}}">
+                                    <input type="hidden" name="role" value="{{item['role']}}">
+                                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="/searchUser/?source=competition" class="btn btn-success mt-2">Appoint New Staff</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Planned Events Section -->
+    <section class="mb-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4>Planned Events</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Work On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in planEvents %}
+                        <tr>
+                            <td>{{ event['title'] }}</td>
+                            <td>{{ event['start_date'].strftime('%d-%m-%Y') }}</td>
+                            <td>{{ event['end_date'].strftime('%d-%m-%Y') }}</td>
+                            <td><a href="{{ url_for('planEventWorkPage', eventId=event['event_id']) }}"
+                                    class="btn btn-success btn-sm">Work On</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Current Events Section -->
+    <section class="mb-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4>Current Events</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in currentEvents %}
+                        <tr>
+                            <td>{{ event['title'] }}</td>
+                            <td>{{ event['start_date'].strftime('%d-%m-%Y') }}</td>
+                            <td>{{ event['end_date'].strftime('%d-%m-%Y') }}</td>
+                            <td>
+                                <a href="{{ url_for('currentEventDetail', eventId=event['event_id']) }}"
+                                    class="btn btn-success">View Details</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Unfinalized Events Section -->
+    <section class="mb-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h4>Unfinalized Events</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in unfinalEvents %}
+                        <tr>
+                            <td>{{ event['title'] }}</td>
+                            <td>{{ event['start_date'].strftime('%d-%m-%Y') }}</td>
+                            <td>{{ event['end_date'].strftime('%d-%m-%Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Finalized Events Section -->
+    <section class="mb-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h4>Finalized Events</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in finalEvents %}
+                        <tr>
+                            <td>{{ event['title'] }}</td>
+                            <td>{{ event['start_date'].strftime('%d-%m-%Y') }}</td>
+                            <td>{{ event['end_date'].strftime('%d-%m-%Y') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+<button onclick="window.location.href='{{ url_for('competitionManagement') }}';"
+    class="btn btn-outline-secondary">Back</button>
+{% endblock %}

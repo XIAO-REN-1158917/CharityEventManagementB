@@ -1,0 +1,35 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Competition Management - Make A Change{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Competition Management</h1>
+
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Theme</th>
+                <th class="text-center">Manage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in competitions %}
+            <tr>
+                <td>{{ item['theme'] }}</td>
+                <td class="text-center">
+                    <a href="{{ url_for('workOnApprovedCompetition', competitionId=item['c_id'], source='fromSiteAdmin') }}"
+                        class="btn btn-success">
+                        <i class="bi bi-tools"></i> Work on
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+
+<p>This is competition management page for site admin</p>
+<p>All competitions should be here, and site admin could delete any one</p>

@@ -1,0 +1,160 @@
+{% extends "dashboard_layout.html" %} {% block title %} Application Review -
+Admin {% endblock %} {% block content %}
+
+{% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {{ msg }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endif %}
+
+<div class="container">
+  <h2 class="text-center mb-4">Competition Application Review</h2>
+  <div class="table-responsive rounded bg-light shadow mb-5">
+    <table class="table table-hover table-striped">
+      <thead class="table-light">
+        <tr>
+          <th
+            scope="col"
+            onclick="sortTable(this, 'competition', 0, 'text')"
+            style="cursor: pointer"
+          >
+            Proposer <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th
+            scope="col"
+            onclick="sortTable(this, 'competition', 1, 'text')"
+            style="cursor: pointer"
+          >
+            Theme <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th
+            scope="col"
+            onclick="sortTable(this, 'competition', 2, 'datetime')"
+            style="cursor: pointer"
+          >
+            Date Submitted <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th
+            scope="col"
+            onclick="sortTable(this, 'competition', 3, 'text')"
+            style="cursor: pointer"
+          >
+            Status <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th
+            scope="col"
+            onclick="sortTable(this, 'competition', 4, 'text')"
+            style="cursor: pointer"
+          >
+            Type <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th scope="col">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in pendingCompetitionApplication %}
+        <tr>
+          <td>{{ item['proposer_name'] }}</td>
+          <td>{{ item['theme'] }}</td>
+          <td>{{ item['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+          <td>{{ item['status'] }}</td>
+          <td>{{ item['type'] }}</td>
+          <td>
+            <a
+              href="{{ url_for('competitionApplicationDetail', applicationId=item['application_id']) }}"
+              style="font-size: 1.2rem"
+              title="View"
+              ><i class="bi bi-eye-fill"></i
+            ></a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center">
+            No pending competition applications available.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <h2 class="text-center my-4">Donation Application Review</h2>
+  <div class="table-responsive rounded bg-light shadow mb-5">
+    <table class="table table-hover table-striped">
+      <thead class="table-light">
+        <tr>
+          <th
+            scope="col"
+            onclick="sortTable(this, 'donation', 0, 'text')"
+            style="cursor: pointer"
+          >
+            Proposer <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th
+            scope="col"
+            onclick="sortTable(this, 'donation', 1, 'text')"
+            style="cursor: pointer"
+          >
+            Description <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th
+            scope="col"
+            onclick="sortTable(this, 'donation', 0, 'datetime')"
+            style="cursor: pointer"
+          >
+            Date Submitted <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <th
+            scope="col"
+            onclick="sortTable(this, 'donation', 0, 'text')"
+            style="cursor: pointer"
+          >
+            Status <i class="bi bi-arrow-down-up"></i>
+          </th>
+          <!-- <th scope="col">type</th> -->
+          <th scope="col">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in pendingDonationApplication %}
+        <tr>
+          <td>{{ item['proposer_name'] }}</td>
+          <td>{{ item['description'] }}</td>
+          <td>{{ item['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+          <td>{{ item['status'] }}</td>
+          <!-- <td>{{ item['type'] }}</td> -->
+          <td>
+            <a
+              href="{{ url_for('donationApplicationDetail', applicationId=item['application_id']) }}"
+              class="btn btn-success btn-sm"
+              >View</a
+            >
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center">
+            No pending donation applications available.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // JavaScript function to sort the table
+  const directionsFor = {
+    competition: new Array(6).fill(-1),
+    donation: new Array(5).fill(-1),
+  };
+</script>
+
+{% endblock %}

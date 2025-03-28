@@ -1,0 +1,38 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Apply to Delete Competition{% endblock %}
+
+{% block content %}
+{% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {{ msg }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+{% endif %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Apply to Delete a Competition</h2>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <form action="{{url_for('applyDeleteCompetition')}}" method="post" class="p-4 border rounded shadow bg-light">
+                <div class="mb-3">
+                    <label for="reason" class="form-label">Reason</label>
+                    <input type="text" name="reason" id="reason" class="form-control" placeholder="Reason for deletion" required>
+                </div>
+                <div class="mb-3">
+                    <label for="details" class="form-label">Details and Follow-up Plans</label>
+                    <textarea name="details" id="details" rows="5" class="form-control" placeholder="Provide more details" required></textarea>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-danger btn-lg btn-block">Apply</button>
+                    <a href="javascript:history.back()" class="btn btn-primary btn-lg btn-block">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

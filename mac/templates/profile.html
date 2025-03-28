@@ -1,0 +1,468 @@
+{% extends "dashboard_layout.html" %}
+<!---->
+{% block title %} Profile {% endblock %}
+<!---->
+<!---->
+{% block content %} {% if msg %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+  {{ msg }}
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endif %}
+<div class="container">
+  <div class="text-center">
+    <div>
+      <h2>{{user['username']}}'s Profile</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div
+      class="col-12 col-sm-8 col-md-6 mx-auto bg-light rounded shadow p-4 mt-3 mb-5"
+    >
+      <!--  -->
+      {% if user['profile_image'] %}
+      <div class="text-center">
+        <img
+          src="{{ url_for('static', filename='images/profile_images/' + user['profile_image']) }}"
+          alt="Profile Image"
+          class="rounded-circle mb-3"
+          style="max-width: 150px"
+        />
+        <form method="POST" action="{{ url_for('deleteProfileImage') }}">
+          {% if user['user_id'] == session.get('userData',{})['user_id'] %}
+          <button
+            type="submit"
+            class="btn btn-danger btn-sm delete-link"
+            data-url="{{ url_for('deleteProfileImage') }}"
+          >
+            Delete Image
+          </button>
+          {% endif %}
+        </form>
+      </div>
+      {% else %}
+      <div class="text-center">
+        <img
+          src="{{ url_for('static', filename='images/profile_images/default.jpg') }}"
+          alt="Profile Image"
+          class="rounded-circle mb-3"
+          style="max-width: 150px"
+        />
+      </div>
+
+      {% endif %}
+
+      <form
+        action="{{url_for('profile')}}"
+        method="POST"
+        enctype="multipart/form-data"
+        class="needs-validation d-flex flex-column gap-3 mt-4"
+        novalidate
+      >
+        <input
+          type="hidden"
+          name="userId"
+          id="userId"
+          value="{{user['user_id']}}"
+        />
+        {% if user['user_id'] == session.get('userData',{})['user_id'] %}
+        <div class="form-group">
+          <label for="profile_image">Profile Image</label>
+          <input
+            type="file"
+            class="form-control-file"
+            id="profile_image"
+            name="profile_image"
+          />
+        </div>
+        {% endif %}
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            value="{{ user['email'] }}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="first_name">First Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="first_name"
+            name="first_name"
+            value="{{ user['first_name'] }}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="last_name">Last Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="last_name"
+            name="last_name"
+            value="{{ user['last_name'] }}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="birth_date">Description</label>
+          <input
+            type="text"
+            class="form-control"
+            id="description"
+            name="description"
+            value="{{ user['description'] }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input
+            type="text"
+            class="form-control"
+            id="location"
+            name="location"
+            value="{{ user['location'] }}"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="birth_date">Status: {{user['status']}}</label>
+        </div>
+
+        <div class="form-group">
+          <label for="birth_date">Role: {{user['role']}}</label>
+        </div>
+
+        <div class="form-group">
+          <label for="birth_date">Public Account: {{user['public']}}</label>
+        </div>
+
+        <div class="form-group">
+          <label for="birth_date"
+            >Message Boards: {{user['message_board']}}</label
+          >
+        </div>
+
+        {% if user['user_id'] == session.get('userData',{})['user_id'] %}
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+        {% endif %}
+      </form>
+
+      <div class="text-center">
+        {% if user['user_id'] == session.get('userData',{})['user_id'] %}
+        <form action="{{ url_for('changePublicStatus') }}" method="post">
+          <input type="hidden" name="userId" value="{{ user['user_id'] }}" />
+
+          {% if user['public'] == 'visible' %}
+          <input type="hidden" name="public" value="hidden" />
+          <button type="submit" class="btn btn-danger mx-auto mt-3">
+            Hide Account
+          </button>
+          {% elif user['public'] == 'hidden' %}
+          <input type="hidden" name="public" value="visible" />
+          <button type="submit" class="btn btn-success mx-auto mt-3">
+            Show Account
+          </button>
+          {% endif %}
+        </form>
+        {% endif %}
+      </div>
+
+      <hr />
+      {% if user['user_id'] == session.get('userData',{})['user_id'] %}
+
+      <h3>Change Password</h3>
+      <form
+        method="POST"
+        action="{{ url_for('updatePassword') }}"
+        class="needs-validation d-flex flex-column gap-3"
+        novalidate
+      >
+        <div class="form-group">
+          <label for="old_password">Old Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="old_password"
+            name="old_password"
+            pattern="^[a-zA-Z0-9!@#$%*]{8,20}$"
+            required
+          />
+          <div class="invalid-feedback">
+            A password consisting of 8 to 20 characters, numbers and at least
+            one special symbol (special symbols: !@#$%*)
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="new_password">New Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="new_password"
+            name="new_password"
+            pattern="^[a-zA-Z0-9!@#$%*]{8,20}$"
+            required
+          />
+          <div class="invalid-feedback">
+            A password consisting of 8 to 20 characters, numbers and at least
+            one special symbol (special symbols: !@#$%*)
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm_password">Confirm New Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="confirm_password"
+            pattern="^[a-zA-Z0-9!@#$%*]{8,20}$"
+            name="confirm_password"
+            required
+          />
+          <div class="invalid-feedback">Passwords do not match.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Change Password</button>
+      </form>
+      {% endif %}
+      <div class="container mt-4">
+        {% set isAdmin = 'admin' in session.get('userData',{})['role'] %} {% set
+        isCAdmin = 'cadmin' in session.get('userData',{})['role'] %} {% set
+        isCScrutineer = 'cscrutineer' in session.get('userData',{})['role'] %}
+        {% set isCModerator = 'cmoderator' in session.get('userData',{})['role']
+        %} {% if isAdmin or isCAdmin or isCScrutineer %}
+        <div class="card w-100 w-md-75 mx-auto">
+          <div class="card-body text-center">
+            <p class="text-center fs-5">Manage this account</p>
+
+            {% if isAdmin %}
+            <form
+              action="{{ url_for('appointSiteRole') }}"
+              method="post"
+              class="needs-validation d-flex flex-column gap-3"
+              novalidate
+            >
+              <input
+                type="hidden"
+                name="userId"
+                value="{{ user['user_id'] }}"
+              />
+              <button
+                type="submit"
+                name="role"
+                value="admin"
+                class="btn btn-success"
+              >
+                Appoint as Site Admin
+              </button>
+              <button
+                type="submit"
+                name="role"
+                value="voter"
+                class="btn btn-success"
+              >
+                Appoint as Voter
+              </button>
+              <button
+                type="submit"
+                name="role"
+                value="helper"
+                class="btn btn-secondary"
+              >
+                Appoint as Site Helper
+              </button>
+            </form>
+            {% endif %}
+
+            <form action="{{ url_for('changeUserStatus') }}" method="post" 
+            onsubmit="return confirm('Are you sure you want to change this accounts status?');"
+            >
+              <input
+                type="hidden"
+                name="userId"
+                value="{{ user['user_id'] }}"
+              />
+
+              {% if user['status'] == 'active' %}
+              <input type="hidden" name="status" value="inactive" />
+              <button type="submit" class="btn btn-danger mx-auto mt-3">
+                Inactivate
+              </button>
+              {% elif user['status'] == 'inactive' %}
+              <input type="hidden" name="status" value="active" />
+              <button type="submit" class="btn btn-success mx-auto mt-3">
+                Activate
+              </button>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+        {% endif %} {% if isCModerator %}
+        <div class="card w-100 w-md-75 mx-auto">
+          <div class="card-body text-center">
+            <p class="text-center fs-5">Manage this account</p>
+
+            <form
+              action="{{ url_for('userMessageBoardBan') }}"
+              method="post"
+              onsubmit="return confirm('Are you sure you want to ban this account?');"
+            >
+              <input
+                type="hidden"
+                name="userId"
+                value="{{ user['user_id'] }}"
+              />
+
+              {% if user['message_board'] == 'allowed' %}
+              <input type="hidden" name="messageBoard" value="banned" />
+              <button type="submit" class="btn btn-danger mx-auto mt-3">
+                Ban From Message Board
+              </button>
+              {% elif user['message_board'] == 'banned' %}
+              <input type="hidden" name="messageBoard" value="allowed" />
+              <button type="submit" class="btn btn-success mx-auto mt-3">
+                Unban From Message Board
+              </button>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <!-- Back Button -->
+  {% if request.args.get('userId') %}
+  <div class="text-center">
+    <button
+      onclick="window.history.back();"
+      class="btn btn-outline-primary px-4 my-4"
+    >
+      Back
+    </button>
+  </div>
+  {% endif %}
+</div>
+
+<!-- The Modal -->
+<div
+  class="modal fade"
+  id="delete_modal"
+  tabindex="-1"
+  aria-labelledby="delete_modal_label"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="delete_modal_label">Delete Confirmation</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body" id="delete_modal_body">
+        Are you sure you want to delete this item?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger" id="confirm_delete">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let delete_url;
+    let delete_content;
+
+    document.querySelectorAll('.delete-link').forEach((link) => {
+      link.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent the default link behavior
+        delete_url = this.getAttribute('data-url'); // Store the delete URL
+        const delete_modal = new bootstrap.Modal(
+          document.getElementById('delete_modal')
+        );
+        delete_content = this.closest('div').querySelector('img').alt; // Get the content to be deleted
+        document.getElementById(
+          'delete_modal_body'
+        ).textContent = `Are you sure you want to delete this item: "${delete_content}"?`;
+        delete_modal.show();
+      });
+    });
+
+    document
+      .getElementById('confirm_delete')
+      .addEventListener('click', function () {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = delete_url;
+
+        document.body.appendChild(form);
+        form.submit();
+      });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const status = "{{ user['status'] }}";
+    const role = "{{ user['role'] }}";
+
+    if (status) {
+      document.querySelector(
+        `input[name="status"][value="${status}"]`
+      ).checked = true;
+    }
+
+    if (role) {
+      document.querySelector(
+        `input[name="role"][value="${role}"]`
+      ).checked = true;
+    }
+  });
+</script>
+
+<script>
+  // Example starter JavaScript for disabling form submissions if there are invalid fields
+  (() => {
+    'use strict';
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    const forms = document.querySelectorAll('.needs-validation');
+
+    // Loop over them and prevent submission
+    Array.from(forms).forEach((form) => {
+      form.addEventListener(
+        'submit',
+        (event) => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+
+          form.classList.add('was-validated');
+        },
+        false
+      );
+    });
+  })();
+</script>
+
+{% endblock %}

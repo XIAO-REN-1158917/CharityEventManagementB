@@ -1,0 +1,42 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Staff Competition List {% endblock %}
+
+{% block content %}
+
+<!-- This could be refactored into competition management template ?   -->
+<h3>Review Votes</h3>
+
+<div class="container d-flex flex-column justify-content-center" style="min-height: 40vh;">
+    <table class="table table-bordered table-striped shadow-sm">
+
+        {% set scrutineer_role = 'cscrutineer' in userCompetitionRoleList | map(attribute='role') %}
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Theme</th>
+                <th scope="col">Role</th>
+                <th scope="col">Vote Details</th>
+
+                {% if scrutineer_role %}
+                    <th scope="col">Vote Check</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in userCompetitionRoleList %}
+            <tr>
+                <td>{{item['theme']}}</td>
+                <td>{{item['role']}}</td>
+                <td><a href="{{url_for('voteDetailsEvent',competitionId=item['competition_id'])}}">Vote Details</a></td>
+                {% if item['role'] == 'cscrutineer' %}
+                <td><a href="{{ url_for('scrutineerEventList', competitionId=item['competition_id']) }}">Review
+                        Votes</a></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+{% endblock %}

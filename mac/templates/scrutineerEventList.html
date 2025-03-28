@@ -1,0 +1,97 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Scrutineer Event List{% endblock %}
+
+{% block content %}
+
+{% if msg %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+  {{ msg }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="container">
+    <!-- Information about the page -->
+    <div class="row justify-content-center my-4">
+        <div class="col-md-10 text-center">
+            <p>On this page, competition scrutineers can view all events requiring vote review for the selected competition.</p>
+        </div>
+    </div>
+
+    <!-- Current Events Section -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-10">
+            <h2 class="text-center mb-4">Current Events</h2>
+            <table class="table table-bordered table-striped shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col">Event</th>
+                        <th scope="col">About</th>
+                        <th scope="col">Voting Started</th>
+                        <th scope="col">Voting Ends</th>
+                        <th scope="col">Review Votes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if currentEvent %}
+                        {% for item in currentEvent %}
+                        <tr>
+                            <td><img src="{{ url_for('static', filename='images/event_images/' + item['image']) }}" alt="Event Image" style="width:100px;height:auto;"></td>
+                            <td>{{ item['title'] }}</td>
+                            <td>{{ item['description'] }}</td>
+                            <td>{{ item['start_date'].strftime('%d-%m-%Y') }}</td>
+                            <td>{{ item['end_date'].strftime('%d-%m-%Y') }}</td>
+                            <td><a href="{{ url_for('reviewVotes', eventId=item['event_id']) }}" class="btn btn-primary">Review Votes</a></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No current events available</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Unfinalised Events Section -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-10">
+            <h2 class="text-center mb-4">Unfinalised Events</h2>
+            <table class="table table-bordered table-striped shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col">Event</th>
+                        <th scope="col">About</th>
+                        <th scope="col">Voting Started</th>
+                        <th scope="col">Voting Ends</th>
+                        <th scope="col">Review Votes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if unfinalEvents %}
+                        {% for item in unfinalEvents %}
+                        <tr>
+                            <td><img src="{{ url_for('static', filename='images/event_images/' + item['image']) }}" alt="Event Image" style="width:100px;height:auto;"></td>
+                            <td>{{ item['title'] }}</td>
+                            <td>{{ item['description'] }}</td>
+                            <td>{{ item['start_date'].strftime('%d-%m-%Y') }}</td>
+                            <td>{{ item['end_date'].strftime('%d-%m-%Y') }}</td>
+                            <td><a href="{{ url_for('reviewVotes', eventId=item['event_id']) }}" class="btn btn-primary">Review Votes</a></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No unfinalised events available</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

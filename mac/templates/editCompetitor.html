@@ -1,0 +1,45 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Edit Competitor {% endblock %}
+
+{% block content %}
+{% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {{ msg }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+{% endif %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Edit Competitor</h2>
+
+    <form action="{{ url_for('editCompetitor') }}" method="post" enctype="multipart/form-data"
+        class="p-4 border rounded shadow bg-light">
+        <input type="hidden" name="competitorId" value="{{competitor['competitor_id']}}">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" name="name" id="name" class="form-control"
+                value="{{ competitorNewInfoButNotUpate['name'] if competitorNewInfoButNotUpate['name'] else competitor['name'] }}"
+                required />
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea name="description" id="description" class="form-control" rows="3"
+                required>{{competitorNewInfoButNotUpate['description'] if competitorNewInfoButNotUpate['description'] else competitor['description']}}</textarea>
+        </div>
+        <div class="mb-3">
+            <img src="{{url_for('static', filename='images/competitor_images/' + competitor['image'])}}"
+                alt="{{competitor['name']}}" class="img-thumbnail mb-3" style="max-width: 150px;">
+            <label for="image" class="form-label">Select a file:</label>
+            <input type="file" id="image" name="image" class="form-control-file" />
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Update Competitor</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

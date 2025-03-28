@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %}All Announcements{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">All Announcements</h2>
+    <ul class="list-group">
+        {% for announcement in announcements %}
+        <li class="list-group-item">
+            <a href="{{ url_for('announcementDetail', announcementId=announcement['announcement_id']) }}">
+                {{ announcement['title'] }}
+            </a>
+            <br><small>{{ announcement['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</small>
+        </li>
+        {% endfor %}
+    </ul>
+    <!-- Back Button -->
+    <div class="text-center mt-4 mb-5">
+        <a href="{{ url_for('home') }}" class="btn btn-outline-primary">Back to Home</a>
+    </div>
+</div>
+{% endblock %}
+http://127.0.0.1:5000/static/images/event_images/eventbird2024.jpg

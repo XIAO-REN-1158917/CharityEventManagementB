@@ -1,0 +1,287 @@
+{% extends "layout.html" %} {% block title %} Home - Make A Change {% endblock
+%} {% block content %}
+
+<!-- Hero Section with Call to Action -->
+<section class="hero-section text-center py-5"
+    style="background-image: url('{{ url_for('static', filename='images/'+'banner.png') }}'); background-size: cover;">
+    <div class="container">
+        <h1 class="display-1 fw-bold text-dark">Make a Change for Our Planet</h1>
+        <p class="lead mb-4" style="font-size: 1.8rem; display: block">
+            Join millions in protecting endangered species and preserving our
+            beautiful nature.
+        </p>
+        <a href="{{ url_for('applyCompetition') if session.get('userData') and session.get('userData')['loggedin'] else url_for('login') }}"
+            class="btn btn-danger btn-lg" style="font-size: 1.4rem; padding: 15px 30px; border-radius: 8px">Start a
+            Competition</a>
+    </div>
+</section>
+<hr class="summary-line m-0" />
+<!-- Top Line -->
+<div class="donation-summary">
+    <div class="donation-item">
+        <span class="donation-amount">${{ donationTotalAmount }}</span>
+        <span class="donation-label">Total donations</span>
+    </div>
+
+    <div class="donation-item">
+        <span class="donation-amount">{{ donationTimes }}</span>
+        <span class="donation-label">Total Participants</span>
+    </div>
+
+    <div class="donation-item">
+        <span class="donation-amount">${{ lastMonthDonationAmount }}</span>
+        <span class="donation-label">Last 30 Days</span>
+    </div>
+</div>
+<hr class="summary-line" />
+<!-- Bottom Line -->
+<!-- Container for Layout -->
+<div class="mt-5">
+    <div class="row">
+        <!-- Main Content Section (Current and Finished Events) -->
+        <div class="col-md-8">
+            <!-- Current Competitions Section with Carousel -->
+            <section class="current-events pb-5">
+                <h2 class="text-center mb-4 display-3">Current Events</h2>
+                <!-- Main Carousel -->
+                <div id="eventsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+                    <div class="carousel-inner">
+                        {% for event in allCurrentEvents %}
+                        <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %}">
+                            <div class="d-flex justify-content-center align-items-center" style="height: 500px">
+                                <img src="{{ url_for('static', filename='images/event_images/' + event['image']) }}"
+                                    class="d-block" style="max-height: 100%; max-width: 100%; object-fit: contain"
+                                    alt="{{ event['title'] }}" />
+                            </div>
+                            <div class="carousel-caption mb-5">
+                                <a href="{{ url_for('competitionDetail', competitionId=event['competition_id']) }}"
+                                    class="btn btn-danger w-75 shadow" style="font-size: 1.6rem; opacity: 0.9">Vote</a>
+                            </div>
+
+                            <!-- Colorful Donation Bar -->
+                            <div class="progress mt-3" style="height: 20px; width: 80%; margin: 0 auto">
+                                {% for donation in donations %} {% if donation['competition_id']
+                                == event['competition_id'] %}
+                                <div class="progress-bar overflow-visible text-dark ps-2" role="progressbar"
+                                    style="width: {{ donation['percentage'] * 100 }}%; background-color: #28a745;"
+                                    aria-valuenow="{{ donation['percentage'] * 100 }}" aria-valuemin="0"
+                                    aria-valuemax="100">
+                                    {{ (donation['percentage'] * 100) | round(2) }}% of
+                                    ${{donation.goal}} {% endif %} {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Carousel Controls (Now Green) -->
+                    <button class="carousel-control-prev highlight-button" type="button"
+                        data-bs-target="#eventsCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next highlight-button" type="button"
+                        data-bs-target="#eventsCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+                <!-- Thumbnail Group under the Carousel -->
+                <div class="mt-4 d-flex justify-content-center" id="eventsThumbnails">
+                    {% for event in allCurrentEvents %}
+                    <div class="px-2">
+                        <a href="#" data-bs-target="#eventsCarousel" data-bs-slide-to="{{ loop.index0 }}">
+                            <img src="{{ url_for('static', filename='images/event_images/' + event['image']) }}"
+                                class="img-thumbnail {% if loop.index0 == 0 %}border-primary{% endif %}"
+                                alt="{{ event['title'] }}" onclick="setBorder({{ loop.index0 }}, 'eventsThumbnails')" />
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Finished Competitions Section with Carousel -->
+            <section class="finished-events py-5">
+                <h2 class="text-center mb-4 display-3">Finished Events</h2>
+                <!-- Main Carousel -->
+                <div id="finishedEventsCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for event in allFinalEvents %}
+                        <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %}">
+                            <div class="d-flex justify-content-center align-items-center" style="height: 500px">
+                                <img src="{{ url_for('static', filename='images/event_images/' + event['image']) }}"
+                                    class="d-block" style="max-height: 100%; max-width: 100%; object-fit: contain"
+                                    alt="{{ event['title'] }}" />
+                            </div>
+                            <div class="carousel-caption">
+                                <a href="{{ url_for('finalEventDetail', eventId=event['event_id']) }}"
+                                    class="btn btn-info w-75 shadow" style="font-size: 1.6rem; opacity: 0.9">View</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Carousel Controls (Now Green) -->
+                    <button class="carousel-control-prev highlight-button" type="button"
+                        data-bs-target="#finishedEventsCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next highlight-button" type="button"
+                        data-bs-target="#finishedEventsCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+
+                <!-- Thumbnail Group under the Carousel -->
+                <div class="mt-4 d-flex justify-content-center" id="finishedThumbnails">
+                    {% for event in allFinalEvents %}
+                    <div class="d-flex justify-content-center align-items-center px-2" style="height: 200px">
+                        <a href="#" data-bs-target="#finishedEventsCarousel" data-bs-slide-to="{{ loop.index0 }}">
+                            <img src="{{ url_for('static', filename='images/event_images/' + event['image']) }}"
+                                class="img-thumbnail {% if loop.index0 == 0 %}border-primary{% endif %}"
+                                alt="{{ event['title'] }}"
+                                onclick="setBorder({{ loop.index0 }}, 'finishedThumbnails')" />
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Sidebar Section (Latest Announcements, Recent Votes, Recent Donations) -->
+        <div class="col-md-4">
+            <div class="rightside">
+                <!-- Announcements Section -->
+                <section class="announcements mb-5">
+                    <h4 class="mb-3">Latest Announcements</h4>
+                    <ul class="list-group">
+                        {% for announcement in announcements[:3] %}
+                        <li class="list-group-item">
+                            <a
+                                href="{{ url_for('announcementDetail', announcementId=announcement['announcement_id']) }}">
+                                {{ announcement['title'] }}
+                            </a>
+                            <br /><small>{{ announcement['create_at'].strftime('%d-%m-%Y') }}</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% if announcements and announcements|length > 3 %}
+                    <a href="{{ url_for('allAnnouncements') }}" class="btn btn-link mt-2">More Announcements</a>
+                    {% endif %}
+                </section>
+
+                <!-- Recent Votes Section -->
+                <section class="recent-votes mb-5">
+                    <h4 class="mb-3">Recent Votes</h4>
+                    <ul class="list-group">
+                        {% if recentVotes %} {% for vote in recentVotes[:3] %}
+                        <li class="list-group-item">
+                            <strong>{{ vote['title'] }}</strong> - {{ vote['username'] }}
+                            <br /><small>{{ vote['create_at'].strftime('%d-%m-%Y') }}</small>
+                        </li>
+                        {% endfor %} {% endif %}
+                    </ul>
+                </section>
+
+                <!-- Recent Donations Section -->
+                <section class="recent-donations">
+                    <h4 class="mb-3">Recent Donations</h4>
+                    <ul class="list-group">
+                        {% if recentDonations %}
+                        {% for donation in recentDonations[:5] %}
+                        <li class="list-group-item">
+                            <strong>{{ donation['username'] }}</strong> donated ${{ donation['amount'] }}
+                            <br>
+                            <small>{{ donation['date'] }}</small>
+                            <small>{{ donation['charity_name'] }}</small>
+                        </li>
+                        {% endfor %}
+                        {% else %}
+                        <li class="list-group-item">
+                            No recent donations available.
+                        </li>
+                        {% endif %}
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .donation-summary {
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .donation-item {
+        margin: 10px;
+    }
+
+    .donation-amount {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #ff0000;
+        /* Red for all time donations */
+    }
+
+    .donation-item:nth-child(2) .donation-amount {
+        color: #ffa27f;
+        /* Peachy pink for last month donations */
+    }
+
+    .donation-item:nth-child(3) .donation-amount {
+        color: #97be5a;
+        /* Green for last day donations */
+    }
+
+    .donation-label {
+        display: block;
+        font-size: 1rem;
+        color: #6c757d;
+    }
+
+    .img-thumbnail {
+        width: 100px;
+        height: 75px;
+        border-radius: 12px;
+    }
+
+    .list-group-item {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
+<script>
+    function setBorder(to, thumbnalsContainer) {
+        const thumbnals = document
+            .getElementById(thumbnalsContainer)
+            .querySelectorAll('img');
+        thumbnals.forEach((thumbnal) => {
+            thumbnal.classList.remove('border-primary');
+        });
+        thumbnals[to].classList.add('border-primary');
+    }
+
+    const eventsCarousel = document.getElementById('eventsCarousel');
+    const finishedEventsCarousel = document.getElementById(
+        'finishedEventsCarousel'
+    );
+    eventsCarousel.addEventListener('slide.bs.carousel', function (event) {
+        setBorder(event.to, 'eventsThumbnails');
+    });
+    finishedEventsCarousel.addEventListener(
+        'slide.bs.carousel',
+        function (event) {
+            setBorder(event.to, 'finishedThumbnails');
+        }
+    );
+</script>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+<!---->
+{% block title %} Register - Species {% endblock %}
+<!---->
+{% block header %}
+<div class="container mt-4">
+    <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Register</li>
+        </ol>
+    </nav>
+</div>
+{% endblock %}
+<!---->
+{% block content %}
+
+<div class="container">
+    <div class="text-center">
+        <div style="font-size: 6rem" class="text-success">
+            <i class="bi bi-person-plus-fill"></i>
+        </div>
+        <div style="margin-top: -1.6rem">
+            <h1>Register</h1>
+        </div>
+        {% if msg %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-sm-8 col-md-6 mx-auto bg-light rounded shadow p-4 mt-3 mb-5">
+            <form action="{{ url_for('register') }}" method="post" class="needs-validation d-flex flex-column"
+                autocomplete="off" novalidate>
+                <!-- Username -->
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" name="username" id="username" class="form-control" pattern="^[a-zA-Z0-9]{2,20}$"
+                        required />
+                    <div class="invalid-feedback">
+                        Please enter a username consisting of 2 to 20 characters or numbers.
+                    </div>
+                </div>
+                <!-- Password -->
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" name="password" id="password" class="form-control"
+                        pattern="^[a-zA-Z0-9!@#$%*]{8,20}$" required />
+                    <div class="invalid-feedback">
+                        A password consisting of 8 to 20 characters, numbers and at least
+                        one special symbol (special symbols: !@#$%*)
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" name="confirmPassword" id="confirmPassword" class="form-control"
+                        pattern="^[a-zA-Z0-9!@#$%*]{8,20}$" required />
+                    <div class="invalid-feedback">Passwords do not match.</div>
+                </div>
+                <!-- Email -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" name="email" id="email" class="form-control" required />
+                    <div class="invalid-feedback">
+                        Please input the correct email address.
+                    </div>
+                </div>
+                <!-- Name -->
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-2">
+                        <label for="firstname" class="form-label">First Name</label>
+                        <input type="text" name="firstname" id="firstname" class="form-control"
+                            pattern="^[A-Za-z]{2,50}$" required />
+                        <div class="invalid-feedback">
+                            Please enter the name in English letters. At least two letters.
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label for="lastname" class="form-label">Last Name</label>
+                        <input type="text" name="lastname" id="lastname" class="form-control" pattern="^[A-Za-z]{2,50}$"
+                            required />
+                        <div class="invalid-feedback">
+                            Please enter the name in English letters. At least two letters.
+                        </div>
+                    </div>
+                </div>
+                <!-- Location -->
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" name="location" id="location" class="form-control"
+                        pattern="^[A-Za-z0-9\s,]{2,50}$" required />
+                    <div class="invalid-feedback">
+                        Address should be 2-50 characters long and can include letters,
+                        numbers, spaces and commas.
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" id="description" class="form-control"
+                        pattern="^[A-Za-z0-9\s.,!?]{10,200}$" required></textarea>
+                    <div class="invalid-feedback">
+                        Please provide a description of 10 to 200 characters using letters,
+                        numbers, spaces, and the following punctuation: .,!?.
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button class="btn btn-primary w-25" type="submit">Register</button>
+                    <a href="javascript:history.go(-1)" class="btn btn-outline-secondary w-25">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

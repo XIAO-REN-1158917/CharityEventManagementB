@@ -1,0 +1,157 @@
+{% extends "dashboard_layout.html" %} {% block title %} Competition Application
+Review {% endblock %} {% block content %}
+<div class="container mt-2">
+  <div class="text-center">
+    <h2>Competition Application Details Review</h2>
+    <p>
+      Review the details of the competition application and choose to approve or
+      decline it.
+    </p>
+  </div>
+
+  <!-- Alert message -->
+  {% if msg %}
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    {{ msg }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endif %}
+
+  <!-- Competition details table -->
+  <div class="table-responsive mt-4 shadow rounded">
+    <table class="table table-bordered table-striped shadow-sm">
+      <tbody>
+        <tr>
+          <th scope="row">Competition proposed by:</th>
+          <td>{{ competitionapplicationDetails['username'] }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Application made:</th>
+          <td>{{ competitionapplicationDetails['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Competition theme:</th>
+          <td>{{ competitionapplicationDetails['theme'] }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Competition description:</th>
+          <td>{{ competitionapplicationDetails['description'] }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Status of application:</th>
+          <td>{{ competitionapplicationDetails['status'] }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Approval form -->
+  <div class="my-4">
+    <form
+      action="{{ url_for('approveCompetition') if competitionapplicationDetails['type'] == 'create' else url_for('approveDeleteCompetition') }}"
+      method="post"
+      class="text-center"
+    >
+      <input
+        type="hidden"
+        name="proposerId"
+        value="{{ competitionapplicationDetails['user_id'] }}"
+      />
+      <input
+        type="hidden"
+        name="applicationId"
+        value="{{ competitionapplicationDetails['application_id'] }}"
+      />
+      <button type="submit" name="approve" class="btn btn-success btn-lg">
+        Approve
+      </button>
+      <button
+        id="decline-toggler"
+        type="button"
+        name="decline"
+        class="btn btn-outline-danger btn-lg ms-3"
+      >
+        Decline
+      </button>
+    </form>
+  </div>
+
+  <!-- Decline form -->
+  <div id="decline-form" class="mt-4 d-none">
+    <form
+      action="{{ url_for('declineCompetition') }}"
+      method="post"
+      class="p-4 border rounded shadow bg-light"
+    >
+      <input type="hidden" name="type" value="competition" />
+      <input
+        type="hidden"
+        name="applicationId"
+        value="{{ competitionapplicationDetails['application_id'] }}"
+      />
+      <div class="form-group mb-3">
+        <label for="feedback" class="form-label"
+          >If declining the application, please provide a reason:</label
+        >
+        <textarea
+          id="feedback"
+          name="feedback"
+          rows="5"
+          class="form-control"
+          placeholder="Type your message here..."
+          required
+        ></textarea>
+        <div class="invalid-feedback">
+          Please provide a reason for declining the application.
+        </div>
+      </div>
+      <button type="submit" name="decline" class="btn btn-danger">
+        Submit
+      </button>
+    </form>
+  </div>
+</div>
+<button
+  onclick="window.history.back();"
+  class="btn btn-outline-primary px-4 mb-4 mt-5"
+>
+  Back
+</button>
+<!-- Bootstrap validation script -->
+<script>
+  // Bootstrap validation for forms
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener(
+        'submit',
+        function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        },
+        false
+      );
+    });
+
+    document.getElementById('decline-toggler').addEventListener('click', () => {
+      const declineForm = document.getElementById('decline-form');
+      if (Array.from(declineForm.classList).includes('d-none')) {
+        declineForm.classList.remove('d-none');
+        declineForm.classList.add('d-block');
+      } else {
+        declineForm.classList.add('d-none');
+        declineForm.classList.remove('d-block');
+      }
+    });
+  })();
+</script>
+{% endblock %}

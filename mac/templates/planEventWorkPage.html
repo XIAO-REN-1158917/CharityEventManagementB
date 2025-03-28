@@ -1,0 +1,204 @@
+{% extends "dashboard_layout.html" %} {% block title %} Work Page for a Planned
+Event {% endblock %} {% block content %}
+{% if msg %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+  {{ msg }}
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endif %}
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Work Page for a Planned Event</h1>
+
+  <!-- Event Info Section -->
+  <h2 class="mb-4">Event Info Section</h2>
+  <form
+    action="{{url_for('deletePlanEvent')}}"
+    method="post"
+    onsubmit="return confirmDelete();"
+  >
+    <input
+      type="hidden"
+      name="eventId"
+      value="{{session['event'].get('eventId', None)}}"
+    />
+    <button type="submit" class="btn btn-danger mb-4">Delete this Event</button>
+  </form>
+
+  <form
+    action="{{ url_for('editPlanEventInfo') }}"
+    method="post"
+    class="p-4 border rounded shadow bg-light"
+  >
+    <div class="mb-3">
+      <label for="title" class="form-label">Event Title</label>
+      <input
+        type="text"
+        name="title"
+        id="title"
+        value="{{ session.get('event', {}).get('title', eventInfo['title']) }}"
+        class="form-control"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="start_date" class="form-label">Start Date</label>
+      <input
+        type="date"
+        name="startDate"
+        id="startDate"
+        value="{{ eventInfo['start_date'] }}"
+        class="form-control"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="end_date" class="form-label">End Date</label>
+      <input
+        type="date"
+        name="endDate"
+        id="endDate"
+        value="{{ eventInfo['end_date'] }}"
+        class="form-control"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea
+        name="description"
+        id="description"
+        class="form-control"
+        rows="5"
+        required
+      >
+{{ session.get('event', {}).get('description', eventInfo['description']) }}</textarea
+      >
+    </div>
+    <button type="submit" class="btn btn-primary">Update Event Info</button>
+  </form>
+
+  <!-- Update Event Image Section -->
+  <h2 class="mt-5 mb-4">Update Event Image</h2>
+  <form
+    action="{{ url_for('updateEventImage') }}"
+    method="post"
+    enctype="multipart/form-data"
+    class="p-4 border rounded shadow bg-light"
+  >
+    <div class="mb-3 text-center">
+      <img
+        src="{{ url_for('static', filename='images/event_images/' + eventInfo['image']) }}"
+        alt="{{ eventInfo['title'] }}"
+        class="img-fluid mb-3"
+      />
+      <input type="file" id="image" name="image" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Update Image</button>
+  </form>
+
+  <!-- Candidates List Section -->
+  <h2 class="mt-5 mb-4">Candidates List</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Image</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for competitor in competitors %}
+      <tr>
+        <td>{{ competitor['name'] }}</td>
+        <td>{{ competitor['description'] }}</td>
+        <td>
+          <img
+            src="{{ url_for('static', filename='images/competitor_images/' + competitor['image']) }}"
+            alt="{{ competitor['name'] }}"
+            class="img-thumbnail"
+            width="100"
+          />
+        </td>
+        <td class="d-flex gap-2">
+          <a
+            href="/editCompetitor/?competitorId={{ competitor['competitor_id'] }}"
+            class="btn btn-warning btn-sm"
+            title="edit"
+            ><i class="bi bi-pencil-square"></i
+          ></a>
+          <form
+            action="{{ url_for('deleteCandidate', candidateId=competitor['candidate_id']) }}"
+            method="POST"
+            style="display: inline"
+            onsubmit="return confirmDelete();"
+          >
+            <button type="submit" class="btn btn-danger btn-sm" title="delete">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Add New Competitor Section -->
+  <h2 class="mt-5 mb-4">Add New Competitor</h2>
+  <a href="{{ url_for('addCompetitor') }}" class="btn btn-success"
+    >Add Competitor</a
+  >
+
+  <!-- Available Candidates for Selection Section -->
+  <h2 class="mt-5 mb-4">Available Candidates for Selection</h2>
+  <p>Candidates added to this competition but do not exist in this event:</p>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Image</th>
+        <th>Select</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for option in competitorsForSelect %}
+      <tr>
+        <td>{{ option['name'] }}</td>
+        <td>{{ option['description'] }}</td>
+        <td>
+          <img
+            src="{{ url_for('static', filename='images/competitor_images/' + option['image']) }}"
+            alt="{{ option['name'] }}"
+            class="img-thumbnail"
+            width="100"
+          />
+        </td>
+        <td>
+          <a
+            href="{{ url_for('selectCandidate', competitorId=option['competitor_id']) }}"
+            class="btn btn-primary btn-sm"
+            >Select</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<button onclick="window.history.back();" class="btn btn-success px-4 my-2">
+  Back
+</button>
+<script>
+  function confirmDelete() {
+    return confirm('Are you sure you want to delete this item?');
+  }
+</script>
+
+{% endblock %}

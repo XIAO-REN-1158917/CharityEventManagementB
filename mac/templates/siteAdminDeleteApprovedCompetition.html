@@ -1,0 +1,244 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Approved Competition Work Page {% endblock %}
+
+{% block content %}
+<!-- Embedded CSS for Styling -->
+<style>
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .container {
+        background-color: #f8f9fa;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2, h4 {
+        color: #343a40;
+        font-weight: bold;
+    }
+
+    hr {
+        margin: 30px 0;
+        border-color: #6c757d;
+    }
+
+    .btn-success {
+        border-radius: 20px;
+        padding: 10px 20px;
+        background-color: #28a745;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-danger {
+        border-radius: 20px;
+        padding: 5px 15px;
+        background-color: #dc3545;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .apply-delete {
+        display: inline-block;
+        background-color: #dc3545;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .apply-delete:hover {
+        background-color: #c82333;
+        text-decoration: none;
+    }
+
+    .table thead {
+        background-color: #e9ecef;
+    }
+
+    .text-center p {
+        color: #6c757d;
+    }
+
+    /* Custom delete button style */
+    .delete-btn {
+        border: none;
+        background-color: #dc3545;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .delete-btn:hover {
+        background-color: #c82333;
+    }
+</style>
+
+<div class="container">
+    <h2 class="text-center mb-4">Approved Competition Work Page</h2>
+    <p class="text-center">Manage your competition details, events, and staff members.</p>
+    
+    <!-- Apply for Deletion Button -->
+    <div class="text-center mb-4">
+        <a href="{{ url_for('applyDeleteCompetition') }}" class="apply-delete">Apply for Deletion</a>
+    </div>
+    
+    <hr>
+
+    <!-- Staff Management Section -->
+    <h4>Staff Management</h4>
+    <p>Appoint and manage competition staff members.</p>
+    <table class="table table-hover table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in staffList %}
+            <tr>
+                <td>{{ item['first_name'] }} {{ item['last_name'] }}</td>
+                <td>{{ item['username'] }}</td>
+                <td>{{ item['email'] }}</td>
+                <td>
+                    {% if item['role'] == 'cadmin' %}
+                    Competition Admin
+                    {% elif item['role'] == 'cscrutineer' %}
+                    Scrutineer
+                    {% elif item['role'] == 'cmoderator' %}
+                    Moderator
+                    {% else %}
+                    {{ item['role'] }}
+                    {% endif %}
+                </td>
+                <!-- Delete Button -->
+                <td>
+                    <form action="{{ url_for('relieveStaff') }}" method="post" onsubmit="return confirm('Are you sure you want to remove this staff member?');">
+                        <input type="hidden" name="userId" value="{{ item['user_id'] }}">
+                        <button type="submit" class="delete-btn">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- Planned Events Section -->
+    <h4>Planned Events</h4>
+    <table class="table table-hover table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>Title</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in planEvents %}
+            <tr>
+                <td>{{ event['title'] }}</td>
+                <td>{{ event['start_date'].strftime('%d-%m-%Y') }}</td>
+                <td>{{ event['end_date'].strftime('%d-%m-%Y') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- Current Events Section -->
+    <h4>Current Events</h4>
+    <table class="table table-hover table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>Title</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in currentEvents %}
+            <tr>
+                <td>{{ event['title'] }}</td>
+                <td>{{ event['start_date'].strftime('%d-%m-%Y') }}</td>
+                <td>{{ event['end_date'].strftime('%d-%m-%Y') }}</td>
+                <td>
+                    <!-- Button linking to currentEventDetailPage.html -->
+                    <a href="{{ url_for('currentEventDetail', eventId=event['event_id']) }}" class="btn btn-success">
+                        View Details
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- Unfinalized Events Section -->
+    <h4>Unfinalized Events</h4>
+    <table class="table table-hover table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>Title</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in unfinalEvents %}
+            <tr>
+                <td>{{ event['title'] }}</td>
+                <td>{{ event['start_date'].strftime('%d-%m-%Y') }}</td>
+                <td>{{ event['end_date'].strftime('%d-%m-%Y') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- Finalized Events Section -->
+    <h4>Finalized Events</h4>
+    <table class="table table-hover table-striped">
+        <thead class="table-light">
+            <tr>
+                <th>Title</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in finalEvents %}
+            <tr>
+                <td>{{ event['title'] }}</td>
+                <td>{{ event['start_date'].strftime('%d-%m-%Y') }}</td>
+                <td>{{ event['end_date'].strftime('%d-%m-%Y') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

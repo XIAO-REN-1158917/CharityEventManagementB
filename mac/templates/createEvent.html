@@ -1,0 +1,71 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Create Event {% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Create a New Event</h2>
+    <p class="text-center">Fill in the details to create a new event for the competition.</p>
+
+
+    {% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {{ msg }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8">
+            <form action="{{ url_for('createEvent') }}" method="post" enctype="multipart/form-data"
+                class="p-4 border rounded shadow bg-light">
+                <!-- Event Title -->
+                <div class="mb-3">
+                    <label for="title" class="form-label">Event Title</label>
+                    <input type="text" name="title" id="title" class="form-control" placeholder="Enter event title"
+                        value="{{ session.get('event', {}).get('title', '') }}" required>
+                </div>
+
+                <!-- Start Date -->
+                <div class="mb-3">
+                    <label for="startDate" class="form-label">Start Date</label>
+                    <input type="date" name="startDate" id="startDate" class="form-control" required>
+                </div>
+
+                <!-- End Date -->
+                <div class="mb-3">
+                    <label for="endDate" class="form-label">End Date</label>
+                    <input type="date" name="endDate" id="endDate" class="form-control" required>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">Event Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="5"
+                        placeholder="Enter event description"
+                        required>{{ session.get('event', {}).get('description', '') }}</textarea>
+                </div>
+
+                <!-- Event Background Image -->
+                <div class="mb-4">
+                    <label for="image" class="form-label">Event Background Image</label>
+                    <input type="file" id="image" name="image" class="form-control">
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success btn-lg">Create Event</button>
+                    <br>
+                    <button onclick="window.history.back();" class="btn btn-outline-secondary btn-lg mt-3">Back</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

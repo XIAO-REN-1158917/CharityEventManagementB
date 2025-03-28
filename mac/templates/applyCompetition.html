@@ -1,0 +1,60 @@
+{% extends "dashboard_layout.html" %} {% block title %} Apply for a New
+Competition {% endblock %} {% block content %}
+
+  {% if msg %}
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    {{ msg }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endif %}
+
+<div
+  class="container d-flex flex-column justify-content-center"
+  style="min-height: 40vh"
+>
+  <h2 class="text-center mb-4">Apply for a New Competition</h2>
+  <p class="text-center">
+    Start your own competition to help raise awareness and make a change!
+  </p>
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-6">
+      <form
+        action="{{ url_for('applyCompetition') }}"
+        method="post"
+        class="p-4 border rounded shadow bg-light"
+      >
+        <div class="mb-3">
+          <label for="theme" class="form-label">Theme</label>
+          <input
+            type="text"
+            name="theme"
+            id="theme"
+            class="form-control"
+            placeholder="Enter the theme of the competition"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            name="description"
+            id="description"
+            rows="5"
+            class="form-control"
+            placeholder="Provide a brief description of the competition"
+            required
+          ></textarea>
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn btn-success btn-lg">Apply</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

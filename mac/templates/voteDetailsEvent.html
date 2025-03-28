@@ -1,0 +1,102 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Staff Competition List {% endblock %}
+
+{% block content %}
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="content-inner bg-light p-4 border rounded">
+    <!-- Event Details Table -->
+    <div class="container my-4">
+        <h3 class="text-center mb-4">Event Details</h3>
+        <table class="table table-bordered table-striped shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Image</th>
+                    <th scope="col">Event</th>
+                    <th scope="col">About</th>
+                    <th scope="col">Voting Started</th>
+                    <th scope="col">Voting Ends</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in eventDetails %}
+                <tr>
+                    <td><img src="{{ url_for('static', filename='images/event_images/' + item['image']) }}" alt="Event Image" style="width:100px;height:auto;"></td>
+                    <td>{{ item['title'] }}</td>
+                    <td>{{ item['description'] }}</td>
+                    <td>{{ item['start_date'].strftime('%d-%m-%Y') }}</td>
+                    <td>{{ item['end_date'].strftime('%d-%m-%Y') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Voting Stats Section -->
+    <div class="container my-5">
+        <h3 class="text-center mb-4">Voting Stats</h3>
+        <!-- Chart Container -->
+        <div class="chart-container" style="position: relative; height:60vh; width:100%">
+            <canvas id="votesChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Parse votes data into JavaScript
+    const votesData = {{ votesPerDay | tojson }};
+    
+    // Prepare data for the chart
+    const labels = votesData.map(item => item.create_date);
+    const data = votesData.map(item => item.all_votes);
+
+    // Create the line chart
+    const ctx = document.getElementById('votesChart').getContext('2d');
+    const votesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Votes Per Day',
+                data: data,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    },
+                    ticks: {
+                        autoSkip: true,
+                        maxTicksLimit: 10
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Votes'
+                    },
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

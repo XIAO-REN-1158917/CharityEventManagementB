@@ -1,0 +1,73 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Review Votes {% endblock %}
+
+{% block content %}
+
+{% if msg %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+  {{ msg }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="container my-5">
+    <!-- Event Details Section -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3>Review Event:</h3>
+                    <h4 class="card-title mt-3">{{ eventDetails['title'] }}</h4>
+                    <p class="card-text">{{ eventDetails['description'] }}</p>
+                    <p><strong>Voting Start Date:</strong> {{ eventDetails['start_date'].strftime('%d-%m-%Y') }}</p>
+                    <p><strong>Voting End Date:</strong> {{ eventDetails['end_date'].strftime('%d-%m-%Y') }}</p>
+                    <p><strong>Status:</strong> {{ eventDetails['status'] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multiple Votes by IP Address Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title mb-4 text-center">IP Addresses with Multiple Votes</h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">IP Address</th>
+                                    <th scope="col">Number of Votes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if multipleVotes %}
+                                    {% for item in multipleVotes %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('ipAddressVotes', ipAddress=item['ip_address'], eventId=eventDetails['event_id']) }}">
+                                                {{ item['ip_address'] }}
+                                            </a>
+                                        </td>
+                                        <td>{{ item['nu_of_votes'] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="2" class="text-center">
+                                            No networks were found to have large numbers of votes (i.e., 3 or more votes per IP address). Please check the vote log manually for any problems.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+
+{% block title %}Request Detail{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Help Requests</h2>
+
+    <!-- Request Information Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h4 class="fw-bold">Request Information</h4>
+            <div class="d-flex align-items-center">
+                {% set isHelper = 'helper' in session.get('userData',{})['role'] %}
+                {% set isAdmin = 'admin' in session.get('userData',{})['role'] %}
+                {% if isHelper or isAdmin %}
+                    <a href="{{url_for('requesterDetailForHelper', requesterId=requestDetail[0].get('proposer_id'))}}">
+                        <img src="{{ url_for('static', filename='images/profile_images/' + requestDetail[0]['request_profile_image']) }}" 
+                            alt="Requester Image" class="rounded-circle mb-3" style="max-width: 70px" />
+                    </a>
+                    <div>
+                        <p class="text-muted">Requester:</p>
+                        <strong>{{ requestDetail[0]['request_username'] }}</strong>
+                    </div>
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/profile_images/' + requestDetail[0]['request_profile_image']) }}" 
+                        alt="Requester Image" class="rounded-circle mb-3" style="max-width: 70px" />
+                    <div>
+                        <p class="text-muted">Requester:</p>
+                        <strong>{{ requestDetail[0]['request_username'] }}</strong>
+                    </div>
+                {% endif %}
+            </div>
+            <p><strong>Title:</strong> {{ requestDetail[0]['title'] }}</p>
+            <p><strong>Description:</strong> {{ requestDetail[0]['description'] }}</p>
+            <p><strong>Status:</strong> {{ requestDetail[0]['status'] }}</p>
+            <p><strong>Time:</strong> {{ requestDetail[0]['request_create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</p>
+        </div>
+
+        <!-- Action Section -->
+        <div class="col-md-4">
+            <h4 class="fw-bold">Actions</h4>
+            <div>
+                {% set user_roles = session.get('userData', {}).get('role', []) %}
+                {% if 'admin' in user_roles or 'helper' in user_roles %}
+                <div>
+                    <!-- Action buttons -->
+                    {% if source is none %}
+                    <form action="{{ url_for('takeRequest') }}" method="post" class="mb-2">
+                        <input type="hidden" name="requestId" value="{{ requestDetail[0].get('request_request_id') }}">
+                        <button type="submit" class="btn btn-primary btn-block">Accept Request</button>
+                    </form>
+                    {% endif %}
+
+                    <form action="{{url_for('assignRequest')}}" method="post" class="mb-2">
+                        <input type="hidden" name="requestId" value="{{ requestDetail[0].get('request_request_id') }}">
+                        <div class="d-flex">
+                            <select name="helperId" class="form-select me-2">
+                                {% for helper in availableHelper %}
+                                <option value="{{helper['user_id']}}">{{helper['username']}}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-outline-primary">Assign</button>
+                        </div>
+                    </form>
+
+                    <!-- Resolved and Drop buttons -->
+                    <form action="{{url_for('resolveRequest')}}" method="post" class="mb-2">
+                        <input type="hidden" name="requestId" value="{{ requestDetail[0].get('request_request_id') }}">
+                        <button type="submit" class="btn btn-success btn-block">Mark as Resolved</button>
+                    </form>
+
+                    <form action="{{url_for('dropRequest')}}" method="post">
+                        <input type="hidden" name="requestId" value="{{ requestDetail[0].get('request_request_id') }}">
+                        <button type="submit" class="btn btn-danger btn-block">Drop Request</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Conversation Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="card-title mb-3">Request Conversation</h4>
+            {% if requestDetail|length > 0 %}
+            <div class="conversation-container">
+                {% for request in requestDetail %}
+                {% if request.get('message_id', '') %}
+                {% if request['message_username'] == session.get('userData', {}).get('username') %}
+                <!-- User's Reply on the Right -->
+                <div class="text-end mb-3">
+                    <div class="p-3 rounded bg-success text-white d-inline-block" style="max-width: 70%;">
+                        <strong>{{ request['message_username'] }}</strong> <small>({{ request['create_at'].strftime('%d-%m-%Y %H:%M:%S') }})</small>
+                        <p>{{ request['content'] }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Others' Message on the Left -->
+                <div class="text-start mb-3">
+                    <div class="p-3 rounded bg-light d-inline-block" style="max-width: 70%;">
+                        <strong>{{ request['username'] }}</strong> <small>({{ request['create_at'].strftime('%d-%m-%Y %H:%M:%S') }})</small>
+                        <p>{{ request['content'] }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">No messages have been sent for this request yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Reply Form Section -->
+    {% if requestDetail[0].get('status') != 'resolved' %}
+    <div class="mt-4">
+        <h5>Reply to Request:</h5>
+        <form action="{{ url_for('sendRequestMessage') }}" method="post">
+            <input type="hidden" name="requestId" value="{{ requestDetail[0].get('request_request_id') }}">
+            <div class="mb-3">
+                <label for="content" class="form-label">Message</label>
+                <textarea name="content" id="content" class="form-control" rows="3"
+                    placeholder="Enter your message here..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Send Reply</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="text-center mt-4">
+        <button onclick="window.history.back();" class="btn btn-secondary px-4 my-2">Back</button>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} IP Address Page {% endblock %}
+
+{% block content %}
+
+<script>
+    function toggle(source, groupClass) {
+        const checkboxes = document.querySelectorAll(`.${groupClass}`);
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = source.checked;
+        });
+    }
+</script>
+
+{% if msg %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+  {{ msg }}
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endif %}
+
+<div class="container my-5">
+    <!-- Event Details Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h3>Review Event</h3>
+                    <h4 class="card-title mt-3">{{ eventDetails['title'] }}</h4>
+                    <p class="card-text">{{ eventDetails['description'] }}</p>
+                    <p><strong>Voting Start Date:</strong> {{ eventDetails['start_date'].strftime('%d-%m-%Y') }}</p>
+                    <p><strong>Voting End Date:</strong> {{ eventDetails['end_date'].strftime('%d-%m-%Y') }}</p>
+                    <p><strong>Status:</strong> {{ eventDetails['status'] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Votes for IP Address Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h4 class="text-center">Votes for IP Address: {{ votesForIP[0]['ip_address'] if votesForIP else 'N/A' }}</h4>
+            <div class="table-responsive mt-4">
+                <table class="table table-bordered table-striped shadow-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Vote At</th>
+                            <th scope="col">Competitor</th>
+                            <th scope="col">Competitor Image</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">
+                                <input type="checkbox" form="savechanges" onclick="toggle(this, 'invalidallvotes');">
+                                Invalidate All Votes
+                            </th>
+                            <th scope="col">
+                                <input type="checkbox" form="savechanges" onclick="toggle(this, 'invalidallusers');">
+                                Invalidate All User Accounts
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if votesForIP %}
+                            {% for item in votesForIP %}
+                            <tr>
+                                <td>{{ item['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                                <td>{{ item['competitor_name'] }}</td>
+                                <td>
+                                    <img src="{{ url_for('static', filename='images/competitor_images/' + item['competitor_image']) }}"
+                                         alt="Competitor Image" class="img-thumbnail" width="100" />
+                                </td>
+                                <td>{{ item['username'] }}</td>
+                                <td>{{ item['first_name'] }}</td>
+                                <td>{{ item['last_name'] }}</td>
+                                <td>{{ item['email'] }}</td>
+                                <td class="text-center">
+                                    <input type="checkbox" class="invalidallvotes" id="invalidvote{{ item['vote_id'] }}" name="invalidvote[]"
+                                           value="{{ item['vote_id'] }}" form="savechanges">
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" class="invalidallusers" id="invaliduser{{ item['user_id'] }}" name="invaliduser[]"
+                                           value="{{ item['user_id'] }}" form="savechanges">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">No votes available for this IP address.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Changes Form Section -->
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <form action="{{ url_for('invalidateVote') }}" id="savechanges" method="post">
+                <input type="hidden" name="eventId" value="{{ eventDetails['event_id'] }}">
+                <input type="hidden" name="ipAddress" value="{{ votesForIP[0]['ip_address'] }}">
+                <button type="submit" class="btn btn-danger mt-3">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

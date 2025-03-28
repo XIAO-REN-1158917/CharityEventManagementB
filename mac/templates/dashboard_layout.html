@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #606676;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            color: #708871;
+        }
+
+        a:hover {
+            color: #435644;
+        }
+
+        .btn-primary {
+            background-color: #708871;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a4e3b;
+            color: #fef3e2;
+        }
+
+        .btn-outline-primary {
+            color: #606676;
+            border-color: #606676;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #708871;
+            border-color: #606676;
+            color: #fef3e2;
+        }
+
+        .form-control {
+            background-color: #fef3e2;
+            border: 1px solid #bec6a0;
+            color: #606676;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #ffffff;
+            padding: 0;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand img {
+            max-height: 48px;
+            margin-right: 15px;
+        }
+
+        .navbar-brand span {
+            font-size: 2.5rem;
+            color: #708871;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .nav-item a {
+            font-size: 0.8rem;
+        }
+
+        .navbar-toggler,
+        .navbar-toggler:focus {
+            border: none;
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-right: 1px solid #ddd;
+            height: 100%;
+            position: sticky;
+            top: 70px;
+            width: 250px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 0.75rem 0;
+            font-size: 1rem;
+            color: #606676;
+            text-decoration: none;
+            padding-left: 0.6rem;
+            border-radius: 0.4rem;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #708871;
+            color: white;
+        }
+
+        /* Content and Wrapper */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+        }
+
+        .content {
+            margin-left: 10px;
+            padding: 1rem;
+            padding-top: 70px;
+            flex-grow: 1;
+            /* Centering */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Centers the content horizontally */
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #606676;
+            color: #fef3e2;
+            padding: 2rem 0 1rem 0;
+            text-align: center;
+            width: 100%;
+            margin-top: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Ensure full height of page */
+        html,
+        body {
+            height: 100%;
+        }
+    </style>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <!-- Modal -->
+    <div class="modal fade" id="dashboardModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button id="modal-confirm" type="button" class="btn btn-primary">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="border-bottom border-body navbar-expand-lg sticky-top z-1000 shadow">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ url_for('home') }}">
+                    <img src="{{ url_for('static', filename='images/team_logo.png') }}" alt="Logo" class="img-fluid" />
+                    <span class="d-none d-sm-block">Make A Change</span>
+                </a>
+                <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon" />
+                </button>
+                <div class="collapse navbar-collapse mb-2 mb-lg-0" id="navbarSupportedContent">
+                    <div class="d-flex ms-auto justify-content-end">
+                        <ul class="navbar-nav d-flex flex-row align-items-center gap-3">
+                            {% if session.get('userData', {}).get('loggedin') %}
+                            <li class="nav-item d-flex align-items-center">
+                                <a class="nav-link" href="{{ url_for('profile') }}"
+                                    title="{{ session.get('userData', {})['username'] }}'s profile">
+                                    <img {% if session['userData']['profile_image'] %} src="{{
+                    url_for('static', filename='images/profile_images/' +
+                    session['userData']['profile_image']) }}" {% else %} src="{{
+                    url_for('static',
+                    filename='images/profile_images/default.jpg') }}" {% endif %} class="rounded-circle" style="width: 2.0rem; border:1px
+                    solid #606676;" />
+                                </a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center">
+                                <a class="btn btn-primary" href="{{ url_for('dashboard') }}">Dashboard</a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center">
+                                <a class="btn btn-outline-primary" href="{{ url_for('logout') }}">Logout</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item d-flex align-items-center">
+                                <a class="btn btn-outline-primary" href="{{ url_for('register') }}">Register</a>
+                            </li>
+                            <li class="nav-item d-flex align-items-center">
+                                <a class="btn btn-outline-primary" href="{{ url_for('login') }}">Login</a>
+                            </li>
+                            {% endif %}
+
+                            <!-- Help Center Link -->
+                            <li class="nav-item d-flex align-items-center">
+                                <a href="{{ url_for('helpCenter') if session.get('userData', {}).get('loggedin') else url_for('login') }}"
+                                    class="btn btn-outline-primary">Help Center</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main layout with sidebar and content -->
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            {% set roles = session.get('userData', {}).get('role', []) %} {% set
+            isVoter = 'voter' in roles %} {% set isAdmin = 'admin' in roles %} {%
+            set isHelper = 'helper' in roles %} {% set isCAdmin = 'cadmin' in roles
+            %} {% set isCScrutineer = 'cscrutineer' in roles %} {% set isCModerator
+            = 'cmoderator' in roles %} {% set current = request.endpoint%}
+
+            <!-- Links based on roles -->
+            {% if isVoter %}
+            <a class="{% if current == 'applyCompetition' %}active{% endif %}"
+                href="{{ url_for('applyCompetition') }}">Apply for a Competition</a>
+            <a class="{% if current == 'myApplication' %}active{% endif %}" href="{{ url_for('myApplication') }}">My
+                Applications</a>
+            <a class="{% if current == 'profile' %}active{% endif %}" href="{{ url_for('profile') }}">Profile</a>
+            <a class="{% if current == 'publicProfileListing' or current=='publicProfile' %}active{% endif %}"
+                href="{{ url_for('publicProfileListing') }}">Users</a>
+            <a class="{% if current == 'myMessage' %}active{% endif %}" href="{{ url_for('myMessage') }}">My Message</a>
+            <a class="{% if current == 'donationHistory' or current == 'myDonationReceipt'%}active{% endif %}"
+                href="{{ url_for('donationHistory') }}">My Donations</a>
+            {% endif %} {% if isVoter and not (isAdmin or isHelper) %}
+            <a class="{% if current == 'helpCenter' %}active{% endif %}" href="{{url_for('helpCenter')}}">Seeking
+                Help</a>
+            {% endif %} {% if isAdmin or isCAdmin or isCScrutineer or isCModerator
+            %}
+            <a class="{% if current == 'searchUser' %}active{% endif %}"
+                href="{{ url_for('searchUser', source='site') }}">User Management</a>
+            {% if isCAdmin %}
+            <a class="{% if current == 'competitionManagement' %}active{% endif %}"
+                href="{{ url_for('competitionManagement') }}">My Competition</a>
+            {% endif %} {% if isCScrutineer %}
+            <a class="{% if current == 'staffCompetitionList' %}active{% endif %}"
+                href="{{ url_for('staffCompetitionList') }}">Review Votes</a>
+            {% endif %} {% endif %} {% if isHelper %}
+            <a class="{% if current == 'helpCenterWork' %}active{% endif %}" href="{{url_for('helpCenterWork')}}">Help
+                Center Work</a>
+            {% endif %} {% if isCModerator %}
+            <a class="{% if current == 'messageManagement' %}active{% endif %}"
+                href="{{url_for('messageManagement')}}">Message Management</a>
+            {% endif %} {% if isAdmin%}
+            <a class="{% if current == 'competitionApplicationReview' or current == 'competitionApplicationDetail'%}active{% endif %}"
+                href="{{url_for('competitionApplicationReview')}}">Application Review</a>
+            <a class="{% if current == 'globalAnnouncement' %}active{% endif %}"
+                href="{{url_for('globalAnnouncement')}}">Global Announcement</a>
+            <a class="{% if current == 'competitionManagementForSiteAdmin' %}active{% endif %}"
+                href="{{url_for('competitionManagementForSiteAdmin')}}">View All Competitions</a>
+            <a class="{% if current == 'helpCenterWork' %}active{% endif %}" href="{{url_for('helpCenterWork')}}">Help
+                Center Work</a>
+            {% endif %}
+        </div>
+
+        <!-- Main content -->
+        <div class="content pb-5">{% block content %}{% endblock %}</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <h6 class="text-uppercase">MakeAChange © 2024. Created by Team Lambda</h6>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+</body>
+
+</html>

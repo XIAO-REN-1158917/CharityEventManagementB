@@ -1,0 +1,113 @@
+{% extends "dashboard_layout.html" %} {% block content %}
+{% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {{ msg }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+{% endif %}
+<main class="container">
+  <h2 class="text-center">Global Announcements Management Page</h2>
+  <p class="text-center">
+    For site admins to manage global announcements. Admins can view, delete, and
+    post new announcements here.
+  </p>
+
+  <section class="my-5">
+    <h4>Post a New Announcement</h4>
+    <div class="card shadow p-4">
+      <form action="{{ url_for('globalAnnouncement') }}" method="post">
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input
+            type="text"
+            name="title"
+            id="title"
+            class="form-control"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="content" class="form-label">Content</label>
+          <textarea
+            name="content"
+            id="content"
+            rows="4"
+            class="form-control"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="mt-4">
+    <h4>All Announcements</h4>
+    <div class="table-responsive rounded bg-light shadow">
+      <table class="table table-hover table-striped">
+        <thead class="table-light">
+          <tr>
+            <th>Title</th>
+            <th>Content</th>
+            <th
+              onclick="sortTable(this, 'donation', 2, 'datetime')"
+              style="cursor: pointer"
+            >
+              Time <i class="bi bi-arrow-down-up"></i>
+            </th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in announcements %}
+          <tr>
+            <td>{{ a['title'] }}</td>
+            <td>{{ a['content'] }}</td>
+            <td>{{ a['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+            <td>
+              <form action="{{ url_for('deleteAnnouncement') }}" method="post">
+                <input
+                  type="hidden"
+                  name="announcementId"
+                  value="{{ a['announcement_id'] }}"
+                />
+                <span
+                  class="btn btn-danger"
+                  title="delete"
+                  style="padding: 0 4px 0 4px; font-size: 14px"
+                  data-bs-toggle="modal"
+                  data-bs-target="#dashboardModal"
+                  onclick="deleteAnnouncement(this, 'Are you sure you want to delete this announcement?')"
+                >
+                  <i class="bi bi-trash3"></i
+                ></span>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+  const directionsFor = { donation: new Array(4).fill(-1) };
+
+  function deleteAnnouncement(self, info) {
+    document.querySelector('.modal-title').innerHTML = 'Delete';
+    document.querySelector('.modal-body').innerHTML = info;
+
+    document
+      .getElementById('modal-confirm')
+      .addEventListener('click', (event) => {
+        self.parentNode.submit();
+      });
+  }
+</script>
+{% endblock %}

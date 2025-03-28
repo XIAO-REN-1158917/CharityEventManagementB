@@ -1,0 +1,152 @@
+{% extends "dashboard_layout.html" %} {% block title %} Public Profile {%
+    endblock %} {% block content %} {% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {{ msg }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endif %}
+    <div class="container">
+      <div class="text-center">
+        <div>
+          <h1>{{ userPublicDetails[0]['username'] }}'s Profile</h1>
+        </div>
+      </div>
+    
+      <div class="row">
+        <div
+          class="col-12 col-sm-8 col-md-6 mx-auto bg-light rounded shadow p-4 mt-3 mb-5"
+        >
+          {% if userPublicDetails[0]['profile_image'] %}
+          <div class="text-center">
+            <img
+              src="{{ url_for('static', filename='images/profile_images/' + userPublicDetails[0]['profile_image']) }}"
+              alt="Profile Image"
+              class="rounded-circle mb-3"
+              style="max-width: 150px"
+            />
+          </div>
+          {% else %}
+          <div class="text-center">
+            <img
+              src="{{ url_for('static', filename='images/profile_images/default.jpg') }}"
+              alt="Profile Image"
+              class="rounded-circle mb-3"
+              style="max-width: 150px"
+            />
+          </div>
+          {% endif %}
+          <div class="text-center">
+            <p>{{ userPublicDetails[0]['description'] }}</p>
+            <p><strong>Location:</strong> {{ userPublicDetails[0]['location'] }}</p>
+            <p><strong>Role:</strong> {{ userPublicDetails[0]['role'] }}</p>
+          </div>
+        </div>
+      </div>
+    
+      {% set isCModerator = 'cmoderator' in session.get('userData',{})['role'] %} {%
+      if isCModerator %}
+      <div class="row">
+        <div
+          class="col-12 col-sm-8 col-md-6 mx-auto bg-light rounded shadow p-4 mt-3 mb-5"
+        >
+          <div class="text-center">
+            {% if userPublicDetails[0]['message_board'] == 'allowed' %}
+            <a
+              href="{{ url_for('profile', userId=userPublicDetails[0]['user_id']) }}"
+              >Ban this account from the message board</a
+            >
+            {% else %}
+            <a
+              href="{{ url_for('profile', userId=userPublicDetails[0]['user_id']) }}"
+              >Unban this account from the message board</a
+            >
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    
+      <div class="row">
+        <div class="col-12">
+          <div class="card mb-4 shadow">
+            <div class="card-header">
+              <h5>Posts</h5>
+            </div>
+            <div class="card-body">
+              {% if userMessages %}
+              <ul class="list-group list-group-flush">
+                {% for message in userMessages %}
+                <li class="list-group-item">{{ message['content'] }}</li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <p>This user has made no posts to any message board yet</p>
+              {% endif %}
+            </div>
+          </div>
+    
+          <div class="card mb-4 shadow">
+            <div class="card-header">
+              <h5>Replies</h5>
+            </div>
+            <div class="card-body">
+              {% if userReplies %}
+              <ul class="list-group list-group-flush">
+                {% for reply in userReplies %}
+                <li class="list-group-item">{{ reply['content'] }}</li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <p>This user has not replied to any posts yet</p>
+              {% endif %}
+            </div>
+          </div>
+    
+          <div class="card mb-4 shadow">
+            <div class="card-header">
+              <h5>Events Voted In</h5>
+            </div>
+            <div class="card-body">
+              {% if eventsVotedIn %}
+              <ul class="list-group list-group-flush">
+                {% for event in eventsVotedIn %}
+                <li class="list-group-item">
+                  <div class="d-flex align-items-center">
+                    <img
+                      src="{{ url_for('static', filename='images/event_images/' + event['image']) }}"
+                      alt="Event Image"
+                      class="me-3 rounded"
+                      style="max-width: 100px"
+                    />
+                    <div>
+                      <h6>{{ event['title'] }}</h6>
+                    </div>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <p>This user has not voted in any events yet</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center">
+      <button
+        onclick="window.history.back();"
+        class="btn btn-outline-primary px-4 my-2"
+      >
+        Back
+      </button>
+    </div>
+    
+    {% endblock %}
+    

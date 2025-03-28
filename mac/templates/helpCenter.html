@@ -1,0 +1,151 @@
+{% extends "layout.html" %}
+
+{% block title %}Help Center{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Help Center</h2>
+    <p class="text-center">Try searching for your question or select from frequently asked topics below.</p>
+
+    <!-- Search Bar Section -->
+    <div class="input-group mb-5 d-flex justify-content-center">
+        <div class="col-md-6">
+            <form action="{{ url_for('helpCenter') }}" method="post">
+                <div class="input-group">
+                    <input type="hidden" name="type" value="search">
+                    <input type="text" name="search" id="search" class="form-control" placeholder="How can we help...">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- FAQ Section -->
+        <div class="col-md-4">
+            <h4>Frequently Asked Questions</h4>
+            <ul class="list-unstyled mt-3">
+                <li><a href="#" class="faq-topic" data-bs-toggle="collapse" data-bs-target="#faq1"
+                        aria-expanded="true">Login and Registration</a></li>
+                <li><a href="#" class="faq-topic" data-bs-toggle="collapse" data-bs-target="#faq2"
+                        aria-expanded="false">Voting and Competitions</a></li>
+                <li><a href="#" class="faq-topic" data-bs-toggle="collapse" data-bs-target="#faq3"
+                        aria-expanded="false">Donations</a></li>
+                <li><a href="#" class="faq-topic" data-bs-toggle="collapse" data-bs-target="#faq4"
+                        aria-expanded="false">Profile Management</a></li>
+                <li><a href="#" class="faq-topic" data-bs-toggle="collapse" data-bs-target="#faq5"
+                        aria-expanded="false">General Help</a></li>
+            </ul>
+
+            <!-- Support Section -->
+            <div class="mt-4">
+                <h5>Support</h5>
+                <ul class="list-unstyled mt-3">
+                    <li><i class="bi bi-chat-left-text"></i> <a href="{{ url_for('helpCenterRequester') }}">Send Help
+                            Request</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- FAQ Details Section -->
+        <div class="col-md-8">
+            <div id="faq1" class="collapse show mt-3">
+                <h5>Login and Registration</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq1-q1">How do I create an account?</a>
+                    </li>
+                    <div id="faq1-q1" class="collapse mt-2">
+                        <p>To create an account, click on the 'Register' button on the top right of the homepage, fill
+                            in your details, and submit.</p>
+                    </div>
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq1-q2">I forgot my password, how do I
+                            reset it?</a></li>
+                    <div id="faq1-q2" class="collapse mt-2">
+                        <p>Click on 'Forgot Password' on the login page and follow the instructions to reset your
+                            password.</p>
+                    </div>
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq1-q3">How do I verify my email
+                            address?</a></li>
+                    <div id="faq1-q3" class="collapse mt-2">
+                        <p>After registering, you'll receive a verification email. Click on the link in the email to
+                            verify your address.</p>
+                    </div>
+                </ul>
+            </div>
+            <div id="faq2" class="collapse mt-3">
+                <h5>Voting and Competitions</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq2-q1">How do I vote in a
+                            competition?</a></li>
+                    <div id="faq2-q1" class="collapse mt-2">
+                        <p>To vote, navigate to the 'Current Events' section, select an event, and click 'Vote'.</p>
+                    </div>
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq2-q2">Can I apply to create my own
+                            competition?</a></li>
+                    <div id="faq2-q2" class="collapse mt-2">
+                        <p>Yes, click on 'Create Competition' under your profile dashboard, fill out the required
+                            information, and submit for approval.</p>
+                    </div>
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq2-q3">How do I delete a competition I
+                            created?</a></li>
+                    <div id="faq2-q3" class="collapse mt-2">
+                        <p>To delete a competition, go to your profile dashboard, find the competition, and click
+                            'Delete'. Only competitions without active votes can be deleted.</p>
+                    </div>
+                </ul>
+            </div>
+            <div id="faq3" class="collapse mt-3">
+                <h5>Donations</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq3-q1">How do I make a donation?</a>
+                    </li>
+                    <div id="faq3-q1" class="collapse mt-2">
+                        <p>Click on the 'Donate' button available on the homepage or the competition pages, select an
+                            amount, and proceed with payment.</p>
+                    </div>
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq3-q2">Is my donation
+                            tax-deductible?</a></li>
+                    <div id="faq3-q2" class="collapse mt-2">
+                        <p>All donations are tax-deductible. You will receive a confirmation email with details for your
+                            records.</p>
+                    </div>
+                </ul>
+            </div>
+            <div id="faq4" class="collapse mt-3">
+                <h5>Profile Management</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq4-q1">How do I update my profile
+                            information?</a></li>
+                    <div id="faq4-q1" class="collapse mt-2">
+                        <p>Go to your profile page and click 'Edit Profile'. Update your details and save changes.</p>
+                    </div>
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq4-q2">How can I change my profile
+                            picture?</a></li>
+                    <div id="faq4-q2" class="collapse mt-2">
+                        <p>Click on your current profile picture, upload a new one, and save changes.</p>
+                    </div>
+                </ul>
+            </div>
+            <div id="faq5" class="collapse mt-3">
+                <h5>General Help</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq5-q1">How do I contact support?</a>
+                    </li>
+                    <div id="faq5-q1" class="collapse mt-2">
+                        <p>You can send a message to our support team through the 'Support' section in the Help Center.
+                        </p>
+                    </div>
+                    <li><a href="#" data-bs-toggle="collapse" data-bs-target="#faq5-q2">What should I do if I encounter
+                            a technical issue?</a></li>
+                    <div id="faq5-q2" class="collapse mt-2">
+                        <p>If you encounter a technical issue, please report it through the 'Support' section or email
+                            us directly at support@makeachange.com.</p>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

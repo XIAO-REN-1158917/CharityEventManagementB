@@ -1,0 +1,133 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Help Center Work{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">Help Center Work Overview</h2>
+    
+     <!-- Current Work Section -->
+     <div class="mb-5 text-center">
+        {% if currentWork %}
+        <a href="{{ url_for('requestDetail', requestId=currentWork['request_id'], source=currentWork) }}"
+            class="btn btn-primary">View Current Work</a>
+        {% else %}
+        <button class="btn btn-secondary" disabled>No Current Work</button>
+        {% endif %}
+    </div>
+    
+    <!-- Overview Section -->
+    <div class="row mb-5">
+        <div class="col-md-3">
+            <div class="card border-primary text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Total Requests</h5>
+                    <p class="display-6">{{ helpCenterOverview['total_requests'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning text-center shadow-sm">
+                <div class="card-body">
+                    <h5>New Requests</h5>
+                    <p class="display-6">{{ helpCenterOverview['new_count'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-info text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Open Requests</h5>
+                    <p class="display-6">{{ helpCenterOverview['open_count'] }}</p>
+                </div>
+            </div>
+        </div> 
+        <div class="col-md-3">
+            <div class="card border-success text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Resolved Requests</h5>
+                    <p class="display-6">{{ helpCenterOverview['resolved_count'] }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4"></div>
+        <div class="col-md-3">
+            <div class="card border-danger text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Total Admin/Helpers</h5>
+                    <p class="display-6">{{ headcount['admin_or_helper_count'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-dark text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Available Admin/Helpers</h5>
+                    <p class="display-6">{{ available }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="mb-4">
+        <h5>Search Requests by Title</h5>
+        <form action="{{ url_for('helpCenterWork') }}" method="post" class="d-flex">
+            <input type="hidden" name="type" value="search">
+            <input type="text" name="search" id="search" class="form-control me-2" placeholder="Enter request title">
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+        </form>
+    </div>
+
+    <!-- Request Table -->
+    <h5 class="mb-3">Requests List</h5>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Title</th>
+                <th>Requester</th>
+                <th>Send At</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+            <tr>
+                <td>{{ request['title'] }}</td>
+                <td>{{ request['username'] }}</td>
+                <td>{{ request['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                <td>{{ request['status'] }}</td>
+                <td>
+                    {% if request['status'] != 'open' %}
+                    <a href="{{ url_for('requestDetail', requestId=request['request_id'], source=currentWork) }}"
+                        class="btn btn-sm btn-outline-info">View</a>
+                    {% else %}
+                    <span class="text-muted">N/A</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Filter Buttons -->
+    <div class="d-flex gap-3 mt-4">
+        <form action="{{ url_for('helpCenterWork') }}" method="post">
+            <input type="hidden" name="type" value="new">
+            <button type="submit" class="btn btn-outline-warning">New Requests</button>
+        </form>
+
+        <form action="{{ url_for('helpCenterWork') }}" method="post">
+            <input type="hidden" name="type" value="open">
+            <button type="submit" class="btn btn-outline-info">Open Requests</button>
+        </form>
+
+        <form action="{{ url_for('helpCenterWork') }}" method="post">
+            <input type="hidden" name="type" value="resolved">
+            <button type="submit" class="btn btn-outline-success">Resolved Requests</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

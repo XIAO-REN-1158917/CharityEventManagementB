@@ -1,0 +1,101 @@
+{% extends "dashboard_layout.html" %}
+<!---->
+{% block title %} Public User Listing {% endblock %}
+<!---->
+{% block header %} {% if msg %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+  {{ msg }}
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+{% endif %}
+
+<div class="container mt-4">
+  <nav style="--bs-breadcrumb-divider: '>'" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">
+        Public Profile List
+      </li>
+    </ol>
+  </nav>
+</div>
+{% endblock %}
+<!---->
+{% block content %}
+<div class="container py-5 d-flex flex-column align-items-center gap-4">
+  <div class="pb-4 text-center">
+    <h3>Users</h3>
+  </div>
+
+  <form
+    action="/publicProfileListing"
+    method="POST"
+    class="d-flex needs-validation input-group"
+    style="width: 24rem"
+  >
+    <input
+      type="text"
+      name="name"
+      id="name"
+      class="form-control"
+      pattern="^[A-Za-z0-9\s]{1,50}$"
+      placeholder="Username"
+      style="border-color: #606676"
+    />
+    <button class="btn btn-outline-primary" type="submit">Filter</button>
+  </form>
+
+  {% if userList %}
+  <div class="table-responsive rounded bg-light shadow mt-5">
+    <table class="table table-hover table-striped">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Picture</th>
+          <th scope="col">Username</th>
+          <th scope="col">Description</th>
+          <th scope="col">Location</th>
+          <th scope="col">Role</th>
+          <th scope="col" style="white-space: nowrap">See More</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in userList %}
+        <tr>
+          <td>
+            <img
+              src="{{ url_for('static', filename='images/profile_images/' + user['profile_image']) }}"
+              alt="Profile Image"
+              class="img-thumbnail"
+              width="100"
+            />
+          </td>
+          <td>{{ user['username'] }}</td>
+          <td>{{ user['description'] }}</td>
+          <td>{{ user['location'] }}</td>
+          <td>{{ user['role'] }}</td>
+          <td>
+            <a
+              title="Profile"
+              style="font-size: 1.2rem"
+              href="{{ url_for('publicProfile', userId=user['user_id']) }}"
+              ><i class="bi bi-person-vcard"></i
+            ></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  <button
+    onclick="window.history.back();"
+    class="btn btn-outline-primary px-4 my-2"
+  >
+    Back
+  </button>
+</div>
+{% endblock %}

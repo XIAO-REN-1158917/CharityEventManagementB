@@ -1,0 +1,32 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}My Competition - Make A Change{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">My Competition</h1>
+
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Theme</th>
+                <th class="text-center">Manage</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for item in competitions %}
+            <tr>
+                <td>{{ item['theme'] }}</td>
+                <td class="text-center">
+                    <a href="{{ url_for('workOnApprovedCompetition', competitionId=item['competition_id']) }}"
+                        class="btn btn-success">
+                        <i class="bi bi-tools"></i> Work on
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

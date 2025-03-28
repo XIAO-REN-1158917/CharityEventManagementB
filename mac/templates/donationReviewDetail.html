@@ -1,0 +1,113 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Donation Application Review {% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h2>Donation Application Details Review</h2>
+        <p>Review the details of the donation application and choose to approve or decline it.</p>
+    </div>
+
+    <!-- Alert message -->
+    {% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <!-- Competition details table -->
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered table-striped shadow-sm">
+            <tbody>
+                {{donationApplicationDetail}}
+                <tr>
+                    <th scope="row">Donation proposed by:</th>
+                    <td>{{ donationApplicationDetail['username'] }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Application made:</th>
+                    <td>{{ donationApplicationDetail['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">charity_name:</th>
+                    <td>{{ donationApplicationDetail['charity_name'] }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">charity_id:</th>
+                    <td>{{ donationApplicationDetail['charity_id'] }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">ird:</th>
+                    <td>{{ donationApplicationDetail['ird'] }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">bank_account:</th>
+                    <td>{{ donationApplicationDetail['bank_account'] }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Description:</th>
+                    <td>{{ donationApplicationDetail['description'] }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">goal:</th>
+                    <td>{{ donationApplicationDetail['goal'] }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">start_date:</th>
+                    <td>{{ donationApplicationDetail['start_date'].strftime('%d-%m-%Y') }}</td>
+                </tr>
+
+                <tr>
+                    <th scope="row">Status of application:</th>
+                    <td>{{ donationApplicationDetail['status'] }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Approval form -->
+    <div class="mt-5">
+        <form action="{{url_for('approveDonation')}}" method="post" class="mb-3">
+            <input type="hidden" name="applicationId" value="{{ donationApplicationDetail['application_id'] }}">
+            <button type="submit" name="approve" class="btn btn-success btn-lg">Approve</button>
+        </form>
+    </div>
+
+    <!-- Decline form -->
+    <div class="mt-4">
+        <form action="{{url_for('declineCompetition')}}" method="post" class="p-4 border rounded shadow bg-light">
+            <input type="hidden" name="applicationId" value="{{ donationApplicationDetail['application_id'] }}">
+            <input type="hidden" name="type" value="donation">
+            <div class="form-group mb-3">
+                <label for="feedback" class="form-label">If declining the application, please provide a reason:</label>
+                <textarea id="feedback" name="feedback" rows="5" class="form-control"
+                    placeholder="Type your message here..." required></textarea>
+                <div class="invalid-feedback">
+                    Please provide a reason for declining the application.
+                </div>
+            </div>
+            <button type="submit" name="decline" class="btn btn-danger btn-lg">Decline</button>
+        </form>
+    </div>
+</div>
+<button onclick="window.history.back();" class="btn btn-success px-4 my-2">Back</button>
+<!-- Bootstrap validation script -->
+<script>
+    // Bootstrap validation for forms
+    (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock %}

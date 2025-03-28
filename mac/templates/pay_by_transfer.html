@@ -1,0 +1,156 @@
+{% extends "layout.html" %} {% block title %} Payment - Bank Transfer {%
+    endblock %} {% block content %}
+    
+    <div class="container mt-5">
+      <!-- Display message if there is any -->
+      {% if msg %}
+      <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ msg }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endif %}
+    
+      <!-- Payment Form -->
+      <div
+        class="card mx-auto shadow border-0"
+        style="max-width: 600px; background-color: #f9f9f9"
+      >
+        <div class="card-body">
+          <h3 class="text-center mb-4" style="color: #435644">
+            Complete Your Bank Transfer
+          </h3>
+    
+          <form
+            action="{{url_for('processingPayment')}}"
+            method="POST"
+            class="needs-validation"
+            autocomplete="off"
+            novalidate
+          >
+            <input type="hidden" name="type" value="transfer" />
+            <input type="hidden" name="anonDonate" value="{{anonDonate}}" />
+            <input type="hidden" name="donateAmount" value="{{donateAmount}}" />
+    
+            <!-- Donation Amount Display -->
+            <p
+              class="text-center mb-3"
+              style="
+                font-size: 2.5rem;
+                font-weight: bold;
+                color: #28a745;
+                animation: pulse 1s infinite;
+              "
+            >
+              Donation: $<strong>{{donateAmount}}</strong>
+            </p>
+    
+            <!-- Payee Name -->
+            <div class="mb-3">
+              <label for="payee" class="form-label">
+                <i class="bi bi-emoji-smile"></i> <strong>Payee Name</strong>
+              </label>
+              <input
+                type="text"
+                id="payee"
+                name="payee"
+                class="form-control"
+                placeholder="NAME ON PAYEE"
+                required
+                pattern="[A-Za-z\s]{4,50}"
+                title="Payee name must be between 4-50 characters, letters, and spaces only."
+              />
+              <div class="invalid-feedback">
+                Please enter the payee's name (4-50 characters, letters and spaces).
+              </div>
+            </div>
+    
+            <!-- Bank Account Number -->
+            <div class="mb-3">
+              <label for="account" class="form-label">
+                <i class="bi bi-credit-card"></i>
+                <strong>Bank Account Number</strong>
+              </label>
+              <input
+                type="text"
+                id="account"
+                name="account"
+                class="form-control"
+                maxlength="20"
+                placeholder="xx-xxxx-xxxxxxx-xx"
+                required
+                oninput="formatBankAccount(this)"
+                pattern="\d{2}-\d{4}-\d{7}-\d{2}"
+                title="Enter a valid bank account number in the format xx-xxxx-xxxxxxx-xx."
+              />
+              <div class="invalid-feedback">
+                Please enter a valid bank account number (xx-xxxx-xxxxxxx-xx).
+              </div>
+            </div>
+    
+            <!-- Submit and Cancel Buttons -->
+            <div
+              class="mt-4 d-flex justify-content-center gap-3 align-items-center"
+            >
+              <button class="btn btn-success btn-lg" type="submit">Donate</button>
+              <a href="javascript:history.go(-1)" class="btn btn-outline-primary"
+                >Cancel</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- JavaScript for formatting and validation -->
+    <script>
+      (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+          form.addEventListener(
+            'submit',
+            function (event) {
+              if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              form.classList.add('was-validated');
+            },
+            false
+          );
+        });
+      })();
+    
+      // Function to format bank account as xx-xxxx-xxxxxxx-xx
+      function formatBankAccount(input) {
+        let value = input.value.replace(/\D/g, '').slice(0, 15);
+        let formatted = value
+          .match(/(\d{2})(\d{4})(\d{7})(\d{2})/)
+          ?.slice(1)
+          .join('-');
+        input.value = formatted ? formatted : value;
+      }
+    </script>
+    
+    <!-- Adding CSS animation for eye-catching effect -->
+    <style>
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+    </style>
+    
+    {% endblock %}
+    

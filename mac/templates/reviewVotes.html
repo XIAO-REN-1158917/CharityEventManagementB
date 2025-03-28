@@ -1,0 +1,106 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %} Review Votes {% endblock %}
+
+{% block content %}
+
+    {% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+<div class="container">
+    <!-- Event Information Section -->
+    <div class="row my-4">
+        <div class="col-md-12 text-center">
+            <h2>Review Event</h2>
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h3 class="card-title">{{ eventDetails['title'] }}</h3>
+                    <p class="card-text">{{ eventDetails['description'] }}</p>
+                    <p><strong>Voting Start Date:</strong> {{ eventDetails['start_date'].strftime('%d-%m-%Y') }}</p>
+                    <p><strong>Voting End Date:</strong> {{ eventDetails['end_date'].strftime('%d-%m-%Y') }}</p>
+                    <p><strong>Status:</strong> {{ eventDetails['status'] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vote Check Form Section -->
+    <div class="row mb-4">
+        <div class="col-md-12 text-center">
+            <form action="{{ url_for('voteCheck') }}" method="post">
+                <input type="hidden" name="eventId" value="{{ eventDetails['event_id'] }}">
+                <button type="submit" name="voteCheck" class="btn btn-primary">Check Votes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Votes Table Section -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <h4 class="text-center mb-4">Votes Review</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped shadow-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Vote At</th>
+                            <th scope="col">Competitor</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if votesToReview %}
+                            {% for item in votesToReview %}
+                            <tr>
+                                <td>{{ item['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                                <td>{{ item['competitor_name'] }}</td>
+                                <td><img src="{{ url_for('static', filename='images/competitor_images/' + item['competitor_image']) }}"
+                                    alt="Competitor Image" class="img-thumbnail" width="100" /></td>
+                                <td>{{ item['username'] }}</td>
+                                <td>{{ item['first_name'] }}</td>
+                                <td>{{ item['last_name'] }}</td>
+                                <td>{{ item['email'] }}</td>
+                                <td><a href="{{ url_for('ipAddressVotes', ipAddress=item['ip_address'], eventId=eventDetails['event_id'], msg='') }}">{{ item['ip_address'] }}</a></td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">No votes available for review.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approval Section -->
+    {% if eventDetails['status'] != 'current' %}
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <form action="{{ url_for('approveEvent') }}" method="post">
+                <input type="hidden" name="eventId" value="{{ eventDetails['event_id'] }}">
+                <button type="submit" name="approve" class="btn btn-success">Approve Event</button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <div class="alert alert-info" role="alert">
+                This is the current event for this competition and cannot be finalized yet.
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

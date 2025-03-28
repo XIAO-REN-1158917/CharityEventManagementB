@@ -1,0 +1,92 @@
+{% extends "dashboard_layout.html" %} 
+{% block title %}Donation History{%endblock %} 
+{% block content %} 
+    {% if msg %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      {{ msg }}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endif %}
+    
+    <div class="container py-2">
+      <!-- Title -->
+      <div class="pb-4 text-center">
+        <h3 class="fw-bold">My Donations</h3>
+      </div>
+      <!-- Donation Table -->
+      <div class="table-responsive rounded bg-light shadow-sm mt-4">
+        <table class="table table-striped align-middle" id="donationTable">
+          <thead class="table-light">
+            <tr>
+              <th
+                scope="col"
+                onclick="sortTable(this,'donation', 0, 'text')"
+                style="cursor: pointer"
+              >
+                Charity Name <i class="bi bi-arrow-down-up"></i>
+              </th>
+              <th
+                scope="col"
+                onclick="sortTable(this,'donation',1, 'usd')"
+                style="cursor: pointer"
+              >
+                Donation Amount <i class="bi bi-arrow-down-up"></i>
+              </th>
+              <th
+                scope="col"
+                onclick="sortTable(this,'donation',2,'datetime')"
+                style="cursor: pointer"
+              >
+                Donation Date <i class="bi bi-arrow-down-up"></i>
+              </th>
+              <th scope="col">Send Receipt</th>
+              <th scope="col">View Full Receipt</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if pastDonations %} {% for past in pastDonations %}
+            <tr>
+              <td>{{ past['charity_name'] }}</td>
+              <td>$ {{ past['amount'] }}</td>
+              <td>{{ past['donation_date'].strftime('%d-%m-%Y') }}</td>
+              <td>
+                <a
+                  href="{{ url_for('sendReceipt') }}"
+                  style="font-size: 1.2rem"
+                  title="Send Receipt"
+                  ><i class="bi bi-envelope-at-fill"></i
+                ></a>
+              </td>
+              <td>
+                <a
+                  href="{{ url_for('myDonationReceipt', recordId=past['record_id']) }}"
+                  style="font-size: 1.2rem"
+                  title="View Receipt"
+                  ><i class="bi bi-eye-fill"></i
+                ></a>
+              </td>
+            </tr>
+            {% endfor %} {% else %}
+            <tr>
+              <td colspan="5" class="text-center text-muted">
+                You have not made any donations yet.
+              </td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <script>
+      // JavaScript function to sort the table
+      const directionsFor = { donation: new Array(5).fill(-1) };
+    </script>
+    
+    {% endblock %}
+    

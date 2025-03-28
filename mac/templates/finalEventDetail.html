@@ -1,0 +1,81 @@
+{% extends "layout.html" %} {% block title %} Final Event Details {% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">{{eventInfo[0]['title']}}</h2>
+  <p class="text-center">
+    {{ eventInfo[0]['description'] }} (From {{ eventInfo[0]['start_date'].strftime('%d-%m-%Y') }} to
+    {{ eventInfo[0]['end_date'].strftime('%d-%m-%Y') }})
+  </p>
+
+  <!-- Winner Section -->
+  <div
+    class="text-white text-center p-3 mb-5 rounded"
+    style="background-image: url({{ url_for('static', filename='images/competitor_images/' + winningCompetitorResult[0]['image']) }});  background-position: center; /* Center the image */
+    background-repeat: no-repeat; 
+    background-size: cover; 
+    min-height:480px;
+    overflow: hidden;
+    position: relative;"
+  >
+    <div
+      style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        content: '';
+        background: #000;
+        opacity: 0.3;
+      "
+    ></div>
+    <div
+      style="position: absolute; z-index: 100; height: 100%; width: 100%"
+      class="d-flex flex-column justify-content-center align-items-center"
+    >
+      <h3>Winner!</h3>
+      <h1 style="font-family: Impact; font-size: 5rem">
+        {{ winningCompetitorResult[0]['name'] }}
+      </h1>
+      <p class="text-info">
+        Total Votes: {{ winningCompetitorResult[0]['total_votes'] }} ({{
+        winningCompetitorResult[0]['percentage'] | round(2) }}%)
+      </p>
+
+      <p class="mt-5 w-75">{{ winningCompetitorResult[0]['description'] }}</p>
+    </div>
+  </div>
+
+  <!-- All Competitors Section -->
+  <div class="row">
+    {% for competitor in competitors %}
+    <div class="col-md-4 mb-4 card-group">
+      <div class="card shadow">
+        <img
+          src="{{ url_for('static', filename='images/competitor_images/' + competitor['image']) }}"
+          alt="{{ competitor['name'] }}"
+          class="card-img-top"
+          height="200"
+        />
+        <div class="card-body">
+          <h5 class="card-title">{{ competitor['name'] }}</h5>
+          <p class="card-text">{{ competitor['description'] }}</p>
+
+          {% set vote_details = allCompetitorVoteDetail |
+          selectattr('competitor_id', 'equalto', competitor['competitor_id']) |
+          list %} {% if vote_details %}
+          <p>Total Votes: {{ vote_details[0]['vote_count'] }}</p>
+          <p>
+            Percentage of Votes: {{ vote_details[0]['percentage'] | round(2) }}%
+          </p>
+          {% else %}
+          <p>Total Votes: No votes</p>
+          <p>Percentage of Votes: 0%</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

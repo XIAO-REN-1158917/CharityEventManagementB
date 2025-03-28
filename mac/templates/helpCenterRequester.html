@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block title %}Help Center - Requester{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Request for Help</h2>
+
+    <!-- Search Section -->
+    <div class="card p-4 mb-5">
+        <h4 class="mb-3">Search for a Request</h4>
+        <form action="{{url_for('helpCenterRequester')}}" method="post" class="d-flex align-items-center">
+            <input type="hidden" name="type" value="search">
+            <input type="text" name="search" id="search" class="form-control me-2" placeholder="Enter keywords">
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+        </form>
+    </div>
+
+    <!-- Requests List Section -->
+    <div class="card mb-5">
+        <div class="card-body">
+            <h4 class="card-title mb-4">Your Requests</h4>
+            {% if requests %}
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Send Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                    <tr>
+                        <td>{{ request['title'] }}</td>
+                        <td>{{ request['create_at'].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                        <td>{{ request['status'] }}</td>
+                        <td>
+                            <a href="{{url_for('requestDetail', requestId=request['request_id'])}}"
+                                class="btn btn-outline-primary btn-sm">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="text-center text-muted">You have not submitted any requests yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- New Request Form Section -->
+    <div class="card p-4">
+        <h4 class="mb-3">Create a New Request</h4>
+        <form action="{{url_for('helpCenterRequester')}}" method="post">
+            <input type="hidden" name="type" value="post">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" name="title" id="title" class="form-control" placeholder="Enter the request title"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea name="description" id="description" class="form-control" rows="4"
+                    placeholder="Provide a detailed description of your request" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Request</button>
+        </form>
+    </div>
+    <!-- Back Button -->
+    <div class="text-center mt-4">
+        <button onclick="window.history.back();" class="btn btn-outline-secondary">Back</button>
+    </div>
+</div>
+{% endblock %}
